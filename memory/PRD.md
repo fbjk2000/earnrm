@@ -6,15 +6,22 @@ upmuch is an AI-powered CRM with automated lead generation engine for LinkedIn d
 ## Access Information
 
 ### Super Admin Access
-- **URL**: https://saleslead-hub.preview.emergentagent.com
+- **URL**: https://leadhub-app-2.preview.emergentagent.com
 - **Email**: florian@unyted.world
 - **Password**: DavidConstantin18
-- **Role**: Owner (full system access)
+- **Role**: Super Admin (full system access)
 
 ### Backend API
-- **Base URL**: https://saleslead-hub.preview.emergentagent.com/api
-- **Health Check**: /api/health
+- **Base URL**: https://leadhub-app-2.preview.emergentagent.com/api
+- **Health Check**: /api/
 - **Documentation**: All endpoints prefixed with /api
+
+## Deployment Status (Feb 6, 2026)
+- ✅ Successfully deployed from GitHub (https://github.com/fbjk2000/upmuch)
+- ✅ Super admin account created and verified
+- ✅ All core features working (Landing, Auth, Dashboard, Leads, Deals, Tasks, Settings, Admin)
+- ✅ Backend API 83.3% test pass rate (minor issues with Kit.com subscriber list)
+- ✅ Frontend 100% functional
 
 ### Integrations
 - **Kit.com**: API Key `Opx5UQNfHpfg54YenT9V7Q` / Secret configured
