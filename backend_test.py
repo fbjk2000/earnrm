@@ -73,9 +73,167 @@ class NewFeaturesTester:
         )
         if success and 'token' in response:
             self.token = response['token']
+            self.user_info = response
+            self.organization_id = response.get('organization_id')
             print(f"   Super admin role: {response.get('role', 'Not set')}")
+            print(f"   Organization ID: {self.organization_id}")
             return True
         return False
+
+    # ==================== NEW FEATURES TESTS ====================
+    
+    def test_organization_settings_get(self):
+        """Test GET /api/organizations/settings - returns org deal_stages, task_stages, affiliate_enabled"""
+        success, response = self.run_test(
+            "Get Organization Settings",
+            "GET",
+            "api/organizations/settings",
+            200
+        )
+        if success:
+            print(f"   Deal stages: {len(response.get('deal_stages', []))}")
+            print(f"   Task stages: {len(response.get('task_stages', []))}")
+            print(f"   Affiliate enabled: {response.get('affiliate_enabled', False)}")
+            return response
+        return None
+
+    def test_organization_settings_update_deal_stages(self):
+        """Test PUT /api/organizations/settings - update deal_stages for organization"""
+        new_deal_stages = [
+            {"id": "lead", "name": "Lead", "order": 1},
+            {"id": "qualified", "name": "Qualified", "order": 2},
+            {"id": "proposal", "name": "Proposal", "order": 3},
+            {"id": "negotiation", "name": "Negotiation", "order": 4},
+            {"id": "won", "name": "Won", "order": 5},
+            {"id": "lost", "name": "Lost", "order": 6},
+            {"id": "custom_stage", "name": "Custom Stage", "order": 7}
+        ]
+        
+        success, response = self.run_test(
+            "Update Deal Stages",
+            "PUT",
+            "api/organizations/settings",
+            200,
+            data={"deal_stages": new_deal_stages}
+        )
+        if success:
+            updated_stages = response.get('deal_stages', [])
+            print(f"   Updated to {len(updated_stages)} deal stages")
+            custom_found = any(stage.get('name') == 'Custom Stage' for stage in updated_stages)
+            print(f"   Custom stage added: {custom_found}")
+        return success
+
+    def test_organization_settings_toggle_affiliate(self):
+        """Test PUT /api/organizations/settings - toggle affiliate_enabled"""
+        # First enable affiliate
+        success, response = self.run_test(
+            "Enable Affiliate Program",
+            "PUT",
+            "api/organizations/settings",
+            200,
+            data={"affiliate_enabled": True}
+        )
+        if success:
+            print(f"   Affiliate enabled: {response.get('affiliate_enabled', False)}")
+        return success
+
+    def test_organization_members_list(self):
+        """Test GET /api/organizations/{org_id}/members - returns list of org members including owner"""
+        if not self.organization_id:
+            print("   No organization ID available")
+            return False
+            
+        success, response = self.run_test(
+            "Get Organization Members",
+            "GET",
+            f"api/organizations/{self.organization_id}/members",
+            200
+        )
+        if success:
+            members = response if isinstance(response, list) else []
+            print(f"   Found {len(members)} members")
+            if members:
+                owner_found = any(member.get('role') == 'owner' for member in members)
+                print(f"   Owner found: {owner_found}")
+                print(f"   Sample member: {members[0].get('name')} ({members[0].get('role')})")
+            return members
+        return []
+
+    def test_update_member_role(self, members):
+        """Test PUT /api/organizations/members/{user_id}/role - change member role"""
+        if not members or len(members) < 1:
+            print("   No members available to test role change")
+            return False
+            
+        # Find a non-owner member to test role change
+        target_member = None
+        for member in members:
+            if member.get('role') != 'owner':
+                target_member = member
+                break
+                
+        if not target_member:
+            print("   No non-owner members found to test role change")
+            return True  # This is OK, just means only owner exists
+            
+        user_id = target_member['user_id']
+        current_role = target_member.get('role', 'member')
+        new_role = 'admin' if current_role == 'member' else 'member'
+        
+        success, response = self.run_test(
+            f"Update Member Role ({current_role} -> {new_role})",
+            "PUT",
+            f"api/organizations/members/{user_id}/role?role={new_role}",
+            200
+        )
+        if success:
+            print(f"   Role updated successfully")
+        return success
+
+    def test_affiliate_enroll(self):
+        """Test POST /api/affiliate/enroll - self-enroll as affiliate when org has affiliate enabled"""
+        success, response = self.run_test(
+            "Enroll as Affiliate",
+            "POST",
+            "api/affiliate/enroll",
+            200
+        )
+        if success:
+            affiliate = response.get('affiliate', {})
+            print(f"   Affiliate code: {affiliate.get('affiliate_code', 'N/A')}")
+            print(f"   Commission rate: {affiliate.get('commission_rate_tier1', 0)}%")
+        return success
+
+    def test_affiliate_status(self):
+        """Test GET /api/affiliate/me - get affiliate status and referral link"""
+        success, response = self.run_test(
+            "Get Affiliate Status",
+            "GET",
+            "api/affiliate/me",
+            200
+        )
+        if success:
+            enrolled = response.get('enrolled', False)
+            print(f"   Enrolled: {enrolled}")
+            if enrolled:
+                affiliate = response.get('affiliate', {})
+                referral_link = response.get('referral_link', '')
+                print(f"   Referral link: {referral_link[:50]}...")
+                print(f"   Total referrals: {affiliate.get('total_referrals', 0)}")
+                print(f"   Total earnings: €{affiliate.get('total_earnings', 0)}")
+        return success
+
+    def test_affiliate_unenroll(self):
+        """Test POST /api/affiliate/unenroll - leave affiliate program"""
+        success, response = self.run_test(
+            "Unenroll from Affiliate",
+            "POST",
+            "api/affiliate/unenroll",
+            200
+        )
+        if success:
+            print(f"   Successfully unenrolled")
+        return success
 
     def test_admin_stats(self):
         """Test admin stats endpoint"""
