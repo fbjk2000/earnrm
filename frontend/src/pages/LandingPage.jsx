@@ -57,79 +57,14 @@ const LandingPage = () => {
   };
 
   const handleDownload = () => {
-    // Create a sample PDF guide content
-    const guideContent = `
-LINKEDIN LEAD GENERATION PLAYBOOK
-By upmuch.com
-
-=================================
-THE ULTIMATE GUIDE TO B2B LEADS
-=================================
-
-CHAPTER 1: OPTIMIZING YOUR PROFILE
-----------------------------------
-• Use a professional headshot
-• Write a compelling headline (not just your job title)
-• Add keywords to your summary for searchability
-• Showcase results and achievements
-
-CHAPTER 2: FINDING YOUR IDEAL PROSPECTS
----------------------------------------
-• Use LinkedIn Sales Navigator filters
-• Search by job title, company size, industry
-• Look at "People Also Viewed" sections
-• Join relevant LinkedIn groups
-
-CHAPTER 3: CONNECTION REQUEST STRATEGIES
-----------------------------------------
-• Always personalize your request
-• Reference mutual connections or interests
-• Keep it short (under 300 characters)
-• Don't pitch in the first message
-
-CHAPTER 4: ENGAGEMENT TACTICS
------------------------------
-• Comment thoughtfully on prospects' posts
-• Share valuable content regularly
-• Use polls to spark conversations
-• Celebrate prospects' achievements
-
-CHAPTER 5: CONVERSION TECHNIQUES
---------------------------------
-• Build rapport before pitching
-• Offer value first (insights, introductions)
-• Use soft CTAs ("Would you be open to...")
-• Move conversations to email or calls
-
-CHAPTER 6: AUTOMATION & TOOLS
------------------------------
-• Use upmuch CRM for lead tracking
-• Import LinkedIn connections via CSV
-• Set up automated follow-up sequences
-• Track engagement with AI scoring
-
-BONUS: 10 CONNECTION REQUEST TEMPLATES
---------------------------------------
-1. "Hi [Name], I noticed we're both in [industry]..."
-2. "Hi [Name], loved your post about [topic]..."
-3. "Hi [Name], we have [X] mutual connections..."
-4. "Hi [Name], I'm building my network of [role]..."
-5. "Hi [Name], your work at [company] caught my eye..."
-
-=================================
-Start your free trial at upmuch.com
-=================================
-    `;
-
-    // Create blob and download
-    const blob = new Blob([guideContent], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
+    // Download the actual PDF playbook
+    const pdfUrl = 'https://customer-assets.emergentagent.com/job_leadhub-app-2/artifacts/r6qssw68_Linked%20In%20Lead%20Generation%20Playbook%20%E2%80%93%20Upmuch.pdf';
     const a = document.createElement('a');
-    a.href = url;
-    a.download = 'LinkedIn_Lead_Generation_Playbook_upmuch.txt';
+    a.href = pdfUrl;
+    a.download = 'LinkedIn_Lead_Generation_Playbook_Upmuch.pdf';
+    a.target = '_blank';
     document.body.appendChild(a);
     a.click();
-    window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
 
     toast.success('Guide downloaded! Check your downloads folder.');
