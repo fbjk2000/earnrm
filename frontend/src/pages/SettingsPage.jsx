@@ -515,6 +515,158 @@ const SettingsPage = () => {
                 )}
               </CardContent>
             </Card>
+
+            {/* Team Members Section - Only show if organization exists */}
+            {organization && (
+              <Card className="mt-4">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Users className="w-5 h-5" />
+                    Team Members
+                  </CardTitle>
+                  <CardDescription>Manage your team and transfer ownership</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {members.map((member) => (
+                      <div key={member.user_id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          {member.picture ? (
+                            <img src={member.picture} alt={member.name} className="w-10 h-10 rounded-full" />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                              <span className="font-semibold text-indigo-600">{member.name?.[0]?.toUpperCase()}</span>
+                            </div>
+                          )}
+                          <div>
+                            <p className="font-medium text-slate-900 flex items-center gap-2">
+                              {member.name}
+                              {member.role === 'owner' && <Crown className="w-4 h-4 text-amber-500" />}
+                              {member.user_id === user?.user_id && <Badge variant="outline" className="text-xs">You</Badge>}
+                            </p>
+                            <p className="text-sm text-slate-500">{member.email}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {(user?.role === 'owner' || user?.role === 'super_admin') && member.user_id !== user?.user_id ? (
+                            <Select 
+                              value={member.role} 
+                              onValueChange={(value) => handleUpdateMemberRole(member.user_id, value)}
+                            >
+                              <SelectTrigger className="w-32">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="member">Member</SelectItem>
+                                <SelectItem value="admin">Admin</SelectItem>
+                                <SelectItem value="owner">Owner</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            <Badge variant="outline" className="capitalize">{member.role}</Badge>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    {members.length === 0 && (
+                      <p className="text-sm text-slate-500 text-center py-4">No team members yet</p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Deal Stages Configuration - Only for owner/admin */}
+            {organization && (user?.role === 'owner' || user?.role === 'admin' || user?.role === 'super_admin') && (
+              <Card className="mt-4">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Layers className="w-5 h-5" />
+                      Pipeline Stages
+                    </CardTitle>
+                    <CardDescription>Customize your deal pipeline stages</CardDescription>
+                  </div>
+                  {!editingStages ? (
+                    <Button variant="outline" size="sm" onClick={() => setEditingStages(true)}>
+                      <Edit className="w-4 h-4 mr-2" />
+                      Edit Stages
+                    </Button>
+                  ) : (
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" onClick={() => { setEditingStages(false); setDealStages(orgSettings?.deal_stages || []); }}>
+                        Cancel
+                      </Button>
+                      <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700" onClick={handleSaveDealStages}>
+                        <Save className="w-4 h-4 mr-2" />
+                        Save
+                      </Button>
+                    </div>
+                  )}
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {dealStages.map((stage, index) => (
+                      <div key={stage.id} className="flex items-center gap-2">
+                        <span className="w-8 text-sm text-slate-400">{index + 1}.</span>
+                        {editingStages ? (
+                          <>
+                            <Input
+                              value={stage.name}
+                              onChange={(e) => updateDealStage(index, 'name', e.target.value)}
+                              className="flex-1"
+                            />
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="text-rose-500"
+                              onClick={() => removeDealStage(index)}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </>
+                        ) : (
+                          <div className="flex-1 p-2 bg-slate-50 rounded">
+                            <span className="text-slate-700">{stage.name}</span>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    {editingStages && (
+                      <Button variant="outline" size="sm" onClick={addDealStage} className="mt-2">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Stage
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Affiliate Settings - Only for owner/admin */}
+            {organization && (user?.role === 'owner' || user?.role === 'admin' || user?.role === 'super_admin') && (
+              <Card className="mt-4">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Gift className="w-5 h-5" />
+                    Affiliate Program Settings
+                  </CardTitle>
+                  <CardDescription>Enable affiliates for your organization</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                    <div>
+                      <p className="font-medium text-slate-900">Enable Affiliate Program</p>
+                      <p className="text-sm text-slate-500">Allow members to earn commissions by referring new customers</p>
+                    </div>
+                    <Switch 
+                      checked={orgSettings?.affiliate_enabled || false}
+                      onCheckedChange={handleToggleAffiliate}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           {/* Billing Tab */}
