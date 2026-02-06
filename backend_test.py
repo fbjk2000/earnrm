@@ -407,38 +407,43 @@ class NewFeaturesTester:
         return success
 
 def main():
-    print("🚀 Starting Super Admin System Tests")
+    print("🚀 Testing New CRM Features (4 Features)")
     print("=" * 50)
     
-    tester = SuperAdminTester()
+    tester = NewFeaturesTester()
     
     # Test 1: Super Admin Login
     if not tester.test_super_admin_login():
         print("❌ Super admin login failed - stopping tests")
         return 1
 
-    # Test 2: Admin Dashboard Stats
-    tester.test_admin_stats()
+    print("\n🔧 Testing Feature 1: Pipeline Management")
+    print("-" * 30)
+    # Get current org settings
+    org_settings = tester.test_organization_settings_get()
+    # Update deal stages
+    tester.test_organization_settings_update_deal_stages()
     
-    # Test 3: Admin Users Management
-    tester.test_admin_users()
+    print("\n🔧 Testing Feature 2: User List & Role Management")
+    print("-" * 30)
+    # Get organization members
+    members = tester.test_organization_members_list()
+    # Test role change
+    tester.test_update_member_role(members)
     
-    # Test 4: Admin Organizations
-    tester.test_admin_organizations()
+    print("\n🔧 Testing Feature 3: Affiliate Toggle")
+    print("-" * 30)
+    # Enable affiliate program
+    tester.test_organization_settings_toggle_affiliate()
     
-    # Test 5: Discount Codes
-    tester.test_discount_codes_list()
-    created_code = tester.test_create_discount_code()
-    if created_code:
-        tester.test_validate_discount_code(created_code)
-    
-    # Test 6: Affiliates
-    tester.test_affiliates_list()
-    tester.test_create_affiliate()
-    
-    # Test 7: Kit.com Integration
-    tester.test_kit_account()
-    tester.test_kit_subscribers()
+    print("\n🔧 Testing Feature 4: Affiliate Self-Enrollment")
+    print("-" * 30)
+    # Test affiliate enrollment
+    tester.test_affiliate_enroll()
+    # Check affiliate status
+    tester.test_affiliate_status()
+    # Test unenrollment
+    tester.test_affiliate_unenroll()
 
     # Print results
     print("\n" + "=" * 50)
