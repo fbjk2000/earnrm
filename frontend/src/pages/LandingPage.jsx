@@ -128,10 +128,12 @@ const LandingPage = () => {
       <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-slate-200/50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between h-16">
-            <Link to="/" className="flex items-center space-x-2" data-testid="logo-link">
-              <div className="w-10 h-10 bg-[#A100FF] rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-xl">e</span>
-              </div>
+            <Link to="/" className="flex items-center" data-testid="logo-link">
+              <img 
+                src="https://customer-assets.emergentagent.com/job_leadhub-app-2/artifacts/9ans91q7_earnrm_mark_purple.svg" 
+                alt="earnrm" 
+                className="h-10 w-10"
+              />
             </Link>
 
             {/* Desktop Nav */}
