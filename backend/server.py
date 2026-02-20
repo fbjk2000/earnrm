@@ -29,7 +29,7 @@ client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
 # JWT Settings
-JWT_SECRET = os.environ.get('JWT_SECRET', 'upmuch_secret_key')
+JWT_SECRET = os.environ.get('JWT_SECRET', 'earnrm_secret_key')
 JWT_ALGORITHM = os.environ.get('JWT_ALGORITHM', 'HS256')
 JWT_EXPIRY_HOURS = int(os.environ.get('JWT_EXPIRY_HOURS', 24))
 
@@ -63,7 +63,7 @@ SUBSCRIPTION_PLANS = {
 }
 
 # Create the main app
-app = FastAPI(title="upmuch CRM API")
+app = FastAPI(title="earnrm CRM API")
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
@@ -354,7 +354,7 @@ class ContactFormSubmit(BaseModel):
 class PlatformSettings(BaseModel):
     model_config = ConfigDict(extra="ignore")
     setting_id: str = "platform_settings"
-    support_email: str = "support@upmuch.com"
+    support_email: str = "support@earnrm.com"
     stripe_api_key: Optional[str] = None
     paypal_client_id: Optional[str] = None
     paypal_client_secret: Optional[str] = None
@@ -988,7 +988,7 @@ async def get_my_affiliate_status(current_user: dict = Depends(get_current_user)
     return {
         "enrolled": True,
         "affiliate": affiliate,
-        "referral_link": f"https://upmuch.com/signup?ref={affiliate['affiliate_code']}",
+        "referral_link": f"https://earnrm.com/signup?ref={affiliate['affiliate_code']}",
         "referrals": referrals
     }
 
@@ -1793,7 +1793,7 @@ async def draft_email(
         user_message = UserMessage(text=prompt)
         response = await chat.send_message(user_message)
         
-        return {"subject": f"{purpose.title()} from upmuch", "content": response}
+        return {"subject": f"{purpose.title()} from earnrm", "content": response}
     except Exception as e:
         logger.error(f"AI email draft error: {e}")
         raise HTTPException(status_code=500, detail="Email drafting failed")
@@ -2500,7 +2500,7 @@ async def submit_contact_form(contact: ContactFormSubmit):
     
     # Get platform settings to find support email
     settings = await db.platform_settings.find_one({"setting_id": "platform_settings"}, {"_id": 0})
-    support_email = settings.get("support_email", "support@upmuch.com") if settings else "support@upmuch.com"
+    support_email = settings.get("support_email", "support@earnrm.com") if settings else "support@earnrm.com"
     
     # Send email notification via Resend
     email_sent = False
@@ -2518,14 +2518,14 @@ async def submit_contact_form(contact: ContactFormSubmit):
                         {contact.message}
                     </div>
                 </div>
-                <p style="color: #64748b; font-size: 12px;">This message was sent from the upmuch contact form.</p>
+                <p style="color: #64748b; font-size: 12px;">This message was sent from the earnrm contact form.</p>
             </div>
             """
             
             await asyncio.to_thread(resend.Emails.send, {
                 "from": SENDER_EMAIL,
                 "to": [support_email],
-                "subject": f"[upmuch Contact] {contact.subject}",
+                "subject": f"[earnrm Contact] {contact.subject}",
                 "html": support_html
             })
             
@@ -2539,16 +2539,16 @@ async def submit_contact_form(contact: ContactFormSubmit):
                     <p><strong>Your message:</strong></p>
                     <p style="color: #475569;">{contact.message}</p>
                 </div>
-                <p>Best regards,<br>The upmuch Team</p>
+                <p>Best regards,<br>The earnrm Team</p>
                 <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
-                <p style="color: #64748b; font-size: 12px;">upmuch CRM - Simplify your sales</p>
+                <p style="color: #64748b; font-size: 12px;">earnrm CRM - Simplify your sales</p>
             </div>
             """
             
             await asyncio.to_thread(resend.Emails.send, {
                 "from": SENDER_EMAIL,
                 "to": [contact.email],
-                "subject": "We received your message - upmuch",
+                "subject": "We received your message - earnrm",
                 "html": confirmation_html
             })
             
@@ -2583,7 +2583,7 @@ async def get_platform_settings(current_user: dict = Depends(require_super_admin
         # Return defaults
         settings = {
             "setting_id": "platform_settings",
-            "support_email": "support@upmuch.com",
+            "support_email": "support@earnrm.com",
             "stripe_api_key": None,
             "paypal_client_id": None,
             "paypal_client_secret": None,
@@ -3060,7 +3060,7 @@ async def send_invoice_email(invoice: dict):
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
             <h2 style="color: #1e293b;">Terms & Conditions</h2>
             <h3>1. Service Agreement</h3>
-            <p>By subscribing to upmuch CRM services, you agree to these terms and conditions.</p>
+            <p>By subscribing to earnrm CRM services, you agree to these terms and conditions.</p>
             
             <h3>2. Subscription & Billing</h3>
             <ul>
@@ -3080,7 +3080,7 @@ async def send_invoice_email(invoice: dict):
             <p>You may cancel your subscription at any time. Access continues until the end of your billing period.</p>
             
             <h3>6. Contact</h3>
-            <p>For support, please contact support@upmuch.com</p>
+            <p>For support, please contact support@earnrm.com</p>
             
             <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
             <p style="color: #64748b; font-size: 12px;">
@@ -3095,7 +3095,7 @@ async def send_invoice_email(invoice: dict):
         full_html = f"""
         <div style="font-family: Arial, sans-serif;">
             <p>Dear {invoice['billing_name']},</p>
-            <p>Thank you for subscribing to upmuch CRM! Please find your invoice details below.</p>
+            <p>Thank you for subscribing to earnrm CRM! Please find your invoice details below.</p>
             
             {invoice_html}
             
@@ -3103,14 +3103,14 @@ async def send_invoice_email(invoice: dict):
             
             {terms_html}
             
-            <p style="margin-top: 30px;">Best regards,<br>The upmuch Team</p>
+            <p style="margin-top: 30px;">Best regards,<br>The earnrm Team</p>
         </div>
         """
         
         await asyncio.to_thread(resend.Emails.send, {
             "from": SENDER_EMAIL,
             "to": [invoice["email"]],
-            "subject": f"Your upmuch Invoice {invoice['invoice_number']}",
+            "subject": f"Your earnrm Invoice {invoice['invoice_number']}",
             "html": full_html
         })
         
@@ -3234,7 +3234,7 @@ async def get_all_transactions(current_user: dict = Depends(require_super_admin)
 
 @api_router.get("/")
 async def root():
-    return {"message": "upmuch CRM API", "version": "1.0.0"}
+    return {"message": "earnrm CRM API", "version": "1.0.0"}
 
 @api_router.get("/health")
 async def health():
