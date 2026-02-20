@@ -512,10 +512,48 @@ async def register(user_data: UserCreate, response: Response):
     user_id = f"user_{uuid.uuid4().hex[:12]}"
     now = datetime.now(timezone.utc)
     
-    # Create organization if name provided
     organization_id = None
-    if user_data.organization_name:
+    user_role = "member"
+    
+    # Check for invite code
+    if user_data.invite_code:
+        invite = await db.invites.find_one({
+            "invite_code": user_data.invite_code,
+            "is_active": True
+        }, {"_id": 0})
+        
+        if not invite:
+            raise HTTPException(status_code=400, detail="Invalid invitation code")
+        
+        if invite.get("expires_at") and invite["expires_at"] < now.isoformat():
+            raise HTTPException(status_code=400, detail="Invitation has expired")
+        
+        if invite.get("used_count", 0) >= invite.get("max_uses", 1):
+            raise HTTPException(status_code=400, detail="Invitation has reached maximum uses")
+        
+        # For email-specific invites, check email matches
+        if invite.get("email") and invite["email"].lower() != user_data.email.lower():
+            raise HTTPException(status_code=400, detail="This invitation is for a different email address")
+        
+        organization_id = invite["organization_id"]
+        user_role = invite.get("role", "member")
+        
+        # Update invite usage
+        await db.invites.update_one(
+            {"invite_code": user_data.invite_code},
+            {"$inc": {"used_count": 1}}
+        )
+        
+        # Update organization user count
+        await db.organizations.update_one(
+            {"organization_id": organization_id},
+            {"$inc": {"user_count": 1}}
+        )
+    
+    # Create organization if name provided and no invite
+    elif user_data.organization_name:
         organization_id = f"org_{uuid.uuid4().hex[:12]}"
+        user_role = "owner"
         org_doc = {
             "organization_id": organization_id,
             "name": user_data.organization_name,
@@ -533,7 +571,7 @@ async def register(user_data: UserCreate, response: Response):
         "name": user_data.name,
         "password_hash": hash_password(user_data.password),
         "organization_id": organization_id,
-        "role": "owner" if organization_id else "member",
+        "role": user_role,
         "created_at": now.isoformat()
     }
     await db.users.insert_one(user_doc)
@@ -545,6 +583,7 @@ async def register(user_data: UserCreate, response: Response):
         "email": user_data.email,
         "name": user_data.name,
         "organization_id": organization_id,
+        "role": user_role,
         "token": token
     }
 
