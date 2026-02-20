@@ -20,11 +20,18 @@ import SupportPage from './pages/SupportPage';
 import PipelineReportPage from './pages/PipelineReportPage';
 import SubscriptionSuccessPage from './pages/SubscriptionSuccessPage';
 import ChatPage from './pages/ChatPage';
+import CallsPage from './pages/CallsPage';
 
 import './App.css';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API = `${BACKEND_URL}/api`;
+
+// Capture PWA install prompt
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  window.deferredPWAPrompt = e;
+});
 
 // Auth Context
 const AuthContext = createContext(null);
@@ -273,6 +280,14 @@ const AppRouter = () => {
         element={
           <ProtectedRoute>
             <ChatPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/calls"
+        element={
+          <ProtectedRoute>
+            <CallsPage />
           </ProtectedRoute>
         }
       />
