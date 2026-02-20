@@ -82,6 +82,16 @@ earnrm is an AI-powered CRM with the slogan "Your CRM that pAIs you back". Featu
     - Lead/Deal info cards in chat header
     - Sidebar groups channels by type
     - Link back to entity from chat
+- [x] **Team Invitations (Feb 20, 2026)**:
+  - Three invitation methods: Link, Email, CSV
+  - Generate shareable invite links (7-day expiry, 100 uses)
+  - Send email invitations to multiple addresses
+  - CSV import for bulk invites (requires 'email' column)
+  - Role selection (Member/Admin) for invites
+  - Pending invitations list with status tracking
+  - Revoke invites functionality
+  - Signup page handles invite codes from URL
+  - Invited users automatically join organization with assigned role
 
 ## Upcoming Features (User Requested)
 - **Mobile Apps**: iOS/Android apps downloadable from landing page
