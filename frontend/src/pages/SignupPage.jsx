@@ -61,7 +61,7 @@ const SignupPage = () => {
       <main className="flex-1 flex items-center justify-center px-6 py-12">
         <Card className="w-full max-w-md border-slate-200 shadow-lg" data-testid="signup-card">
           <CardHeader className="text-center pb-2">
-            <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+            <div className="w-12 h-12 bg-earnrm-purple rounded-xl flex items-center justify-center mx-auto mb-4">
               <span className="text-white font-bold text-xl">U</span>
             </div>
             <CardTitle className="text-2xl font-bold text-slate-900" data-testid="signup-title">Create your account</CardTitle>
@@ -174,7 +174,7 @@ const SignupPage = () => {
 
               <Button
                 type="submit"
-                className="w-full h-12 bg-indigo-600 hover:bg-indigo-700"
+                className="w-full h-12 bg-earnrm-purple hover:bg-purple-700"
                 disabled={loading}
                 data-testid="signup-submit-btn"
               >
@@ -192,7 +192,7 @@ const SignupPage = () => {
 
             <p className="text-center text-sm text-slate-600">
               Already have an account?{' '}
-              <Link to="/login" className="text-indigo-600 hover:text-indigo-700 font-medium" data-testid="login-link">
+              <Link to="/login" className="text-earnrm-purple hover:text-purple-700 font-medium" data-testid="login-link">
                 Sign in
               </Link>
             </p>
