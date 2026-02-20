@@ -117,7 +117,7 @@ const SignupPage = () => {
                   </div>
                   <div>
                     <p className="font-medium text-slate-900">Joining {inviteInfo.organization_name}</p>
-                    <p className="text-sm text-slate-600">You'll be added as a <Badge variant="outline" className="ml-1">{inviteInfo.role}</Badge></p>
+                    <span className="text-sm text-slate-600">You'll be added as a <Badge variant="outline" className="ml-1">{inviteInfo.role}</Badge></span>
                   </div>
                 </div>
               </div>
