@@ -438,6 +438,12 @@ const LeadsPage = () => {
                               <MessageSquare className="w-4 h-4 mr-2" />
                               Discuss Lead
                             </DropdownMenuItem>
+                            {lead.phone && (
+                              <DropdownMenuItem onClick={() => navigate(`/calls?lead=${lead.lead_id}`)}>
+                                <Phone className="w-4 h-4 mr-2" />
+                                Call Lead
+                              </DropdownMenuItem>
+                            )}
                             <DropdownMenuItem onClick={() => handleScoreLead(lead.lead_id)}>
                               <Zap className="w-4 h-4 mr-2" />
                               AI Score
