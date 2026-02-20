@@ -3638,6 +3638,96 @@ async def create_chat_channel(
     channel_doc.pop('_id', None)
     return channel_doc
 
+@api_router.get("/chat/context/{context_type}/{context_id}")
+async def get_or_create_contextual_channel(
+    context_type: str,
+    context_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Get or create a contextual chat channel for a lead, deal, task, or company"""
+    if not current_user.get("organization_id"):
+        raise HTTPException(status_code=400, detail="No organization")
+    
+    valid_types = ["lead", "deal", "task", "company"]
+    if context_type not in valid_types:
+        raise HTTPException(status_code=400, detail=f"Invalid context type. Must be one of: {valid_types}")
+    
+    # Check if the related entity exists
+    collection_map = {
+        "lead": db.leads,
+        "deal": db.deals,
+        "task": db.tasks,
+        "company": db.companies
+    }
+    id_field_map = {
+        "lead": "lead_id",
+        "deal": "deal_id",
+        "task": "task_id",
+        "company": "company_id"
+    }
+    
+    entity = await collection_map[context_type].find_one(
+        {id_field_map[context_type]: context_id, "organization_id": current_user["organization_id"]},
+        {"_id": 0}
+    )
+    if not entity:
+        raise HTTPException(status_code=404, detail=f"{context_type.capitalize()} not found")
+    
+    # Get entity name for channel name
+    if context_type == "lead":
+        entity_name = f"{entity.get('first_name', '')} {entity.get('last_name', '')}".strip() or "Unknown Lead"
+    elif context_type == "deal":
+        entity_name = entity.get("name", "Unknown Deal")
+    elif context_type == "task":
+        entity_name = entity.get("title", "Unknown Task")
+    elif context_type == "company":
+        entity_name = entity.get("name", "Unknown Company")
+    
+    # Check if channel already exists
+    channel_id = f"{context_type}_{context_id}"
+    existing_channel = await db.chat_channels.find_one(
+        {"channel_id": channel_id, "organization_id": current_user["organization_id"]},
+        {"_id": 0}
+    )
+    
+    if existing_channel:
+        # Update entity info in case it changed
+        existing_channel["entity_name"] = entity_name
+        existing_channel["entity"] = entity
+        return existing_channel
+    
+    # Create new contextual channel
+    now = datetime.now(timezone.utc)
+    channel_doc = {
+        "channel_id": channel_id,
+        "organization_id": current_user["organization_id"],
+        "name": entity_name,
+        "description": f"Discussion about {context_type}: {entity_name}",
+        "channel_type": context_type,
+        "related_id": context_id,
+        "members": [],
+        "created_by": current_user["user_id"],
+        "created_at": now.isoformat(),
+        "last_message_at": None
+    }
+    await db.chat_channels.insert_one(channel_doc)
+    channel_doc.pop('_id', None)
+    channel_doc["entity_name"] = entity_name
+    channel_doc["entity"] = entity
+    
+    return channel_doc
+
+@api_router.get("/chat/context/{context_type}/{context_id}/messages")
+async def get_contextual_channel_messages(
+    context_type: str,
+    context_id: str,
+    limit: int = 50,
+    current_user: dict = Depends(get_current_user)
+):
+    """Get messages for a contextual channel (lead/deal/task/company)"""
+    channel_id = f"{context_type}_{context_id}"
+    return await get_channel_messages(channel_id, limit, None, current_user)
+
 @api_router.get("/chat/channels/{channel_id}/messages")
 async def get_channel_messages(
     channel_id: str,
