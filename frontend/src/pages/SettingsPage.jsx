@@ -791,6 +791,224 @@ const SettingsPage = () => {
             )}
           </TabsContent>
 
+          {/* Team & Invites Tab */}
+          <TabsContent value="team">
+            <div className="space-y-6">
+              {/* Invite New Members */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <UserPlus className="w-5 h-5 text-[#A100FF]" />
+                    Invite Team Members
+                  </CardTitle>
+                  <CardDescription>
+                    Invite colleagues to join your organization
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Role Selection */}
+                  <div className="space-y-2">
+                    <Label>Invite as</Label>
+                    <Select value={inviteRole} onValueChange={setInviteRole}>
+                      <SelectTrigger className="w-[200px]" data-testid="invite-role-select">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="member">Member</SelectItem>
+                        <SelectItem value="admin">Admin</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Method 1: Invite Link */}
+                  <div className="p-4 border rounded-lg space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Link className="w-4 h-4 text-[#A100FF]" />
+                      <h4 className="font-medium">Share Invite Link</h4>
+                    </div>
+                    <p className="text-sm text-slate-600">Generate a link that anyone can use to join your organization</p>
+                    
+                    {inviteLink ? (
+                      <div className="flex gap-2">
+                        <Input 
+                          value={inviteLink.invite_link} 
+                          readOnly 
+                          className="flex-1 bg-slate-50"
+                          data-testid="invite-link-input"
+                        />
+                        <Button 
+                          variant="outline" 
+                          onClick={() => copyToClipboard(inviteLink.invite_link)}
+                          data-testid="copy-invite-link"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button 
+                        onClick={handleGenerateInviteLink} 
+                        disabled={generatingLink}
+                        className="bg-[#A100FF] hover:bg-purple-700"
+                        data-testid="generate-invite-link"
+                      >
+                        {generatingLink ? 'Generating...' : 'Generate Invite Link'}
+                      </Button>
+                    )}
+                    {inviteLink && (
+                      <p className="text-xs text-slate-500">
+                        Expires: {new Date(inviteLink.expires_at).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Method 2: Email Invites */}
+                  <div className="p-4 border rounded-lg space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Mail className="w-4 h-4 text-[#A100FF]" />
+                      <h4 className="font-medium">Send Email Invitations</h4>
+                    </div>
+                    <p className="text-sm text-slate-600">Enter email addresses (one per line or comma-separated)</p>
+                    <textarea
+                      className="w-full min-h-[100px] p-3 border rounded-lg text-sm resize-none focus:ring-2 focus:ring-[#A100FF] focus:border-transparent"
+                      placeholder="email1@example.com&#10;email2@example.com"
+                      value={inviteEmails}
+                      onChange={(e) => setInviteEmails(e.target.value)}
+                      data-testid="invite-emails-input"
+                    />
+                    <Button 
+                      onClick={handleSendEmailInvites}
+                      disabled={sendingInvites || !inviteEmails.trim()}
+                      className="bg-[#A100FF] hover:bg-purple-700"
+                      data-testid="send-email-invites"
+                    >
+                      <Send className="w-4 h-4 mr-2" />
+                      {sendingInvites ? 'Sending...' : 'Send Invitations'}
+                    </Button>
+                  </div>
+
+                  {/* Method 3: CSV Import */}
+                  <div className="p-4 border rounded-lg space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Upload className="w-4 h-4 text-[#A100FF]" />
+                      <h4 className="font-medium">Import from CSV</h4>
+                    </div>
+                    <p className="text-sm text-slate-600">Upload a CSV file with an "email" column</p>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="file"
+                        accept=".csv"
+                        onChange={handleCSVUpload}
+                        className="hidden"
+                        id="csv-upload"
+                        data-testid="csv-upload-input"
+                      />
+                      <Button 
+                        variant="outline" 
+                        onClick={() => document.getElementById('csv-upload').click()}
+                        data-testid="csv-upload-btn"
+                      >
+                        <Upload className="w-4 h-4 mr-2" />
+                        Choose CSV File
+                      </Button>
+                      <span className="text-xs text-slate-500">CSV should have "email" column header</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Current Team Members */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Users className="w-5 h-5" />
+                    Team Members ({members.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {members.map((member) => (
+                      <div key={member.user_id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-[#A100FF]/10 flex items-center justify-center">
+                            <span className="text-[#A100FF] font-medium">
+                              {member.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                            </span>
+                          </div>
+                          <div>
+                            <p className="font-medium">{member.name}</p>
+                            <p className="text-sm text-slate-500">{member.email}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant={member.role === 'owner' ? 'default' : 'outline'} className={member.role === 'owner' ? 'bg-[#A100FF]' : ''}>
+                            {member.role === 'owner' && <Crown className="w-3 h-3 mr-1" />}
+                            {member.role}
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Pending Invitations */}
+              {pendingInvites.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Clock className="w-5 h-5" />
+                      Pending Invitations ({pendingInvites.length})
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {pendingInvites.map((invite) => (
+                        <div key={invite.invite_id} className="flex items-center justify-between p-3 border rounded-lg">
+                          <div>
+                            <p className="font-medium">
+                              {invite.type === 'email' ? invite.email : 'Invite Link'}
+                            </p>
+                            <p className="text-sm text-slate-500">
+                              Role: {invite.role} • 
+                              {invite.status === 'expired' ? (
+                                <span className="text-red-500 ml-1">Expired</span>
+                              ) : invite.status === 'used' ? (
+                                <span className="text-emerald-500 ml-1">Used</span>
+                              ) : (
+                                <span className="text-amber-500 ml-1">Pending</span>
+                              )}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {invite.type === 'link' && invite.status === 'pending' && (
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => copyToClipboard(`${window.location.origin}/signup?invite=${invite.invite_code}`)}
+                              >
+                                <Copy className="w-4 h-4" />
+                              </Button>
+                            )}
+                            {invite.status === 'pending' && (
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="text-red-500 hover:text-red-700"
+                                onClick={() => handleRevokeInvite(invite.invite_id)}
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </TabsContent>
+
           {/* Billing Tab */}
           <TabsContent value="billing">
             <div className="space-y-6">
