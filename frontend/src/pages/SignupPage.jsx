@@ -99,11 +99,30 @@ const SignupPage = () => {
               alt="earnrm" 
               className="h-10 mx-auto mb-4"
             />
-            <CardTitle className="text-2xl font-bold text-slate-900" data-testid="signup-title">Create your account</CardTitle>
-            <CardDescription className="text-slate-600">Start your free trial — no credit card required</CardDescription>
+            <CardTitle className="text-2xl font-bold text-slate-900" data-testid="signup-title">
+              {inviteInfo ? 'Join your team' : 'Create your account'}
+            </CardTitle>
+            <CardDescription className="text-slate-600">
+              {inviteInfo ? `You've been invited to join ${inviteInfo.organization_name}` : 'Start your free trial — no credit card required'}
+            </CardDescription>
           </CardHeader>
           
           <CardContent className="space-y-6 pt-4">
+            {/* Invitation Banner */}
+            {inviteInfo && (
+              <div className="p-4 bg-purple-50 border border-purple-100 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#A100FF]/10 flex items-center justify-center">
+                    <Users className="w-5 h-5 text-[#A100FF]" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-slate-900">Joining {inviteInfo.organization_name}</p>
+                    <p className="text-sm text-slate-600">You'll be added as a <Badge variant="outline" className="ml-1">{inviteInfo.role}</Badge></p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Google Signup */}
             <Button
               variant="outline"
