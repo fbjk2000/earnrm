@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth, API } from '../App';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -30,18 +30,34 @@ import {
   Bell,
   Check,
   CheckCheck,
-  Loader2
+  Loader2,
+  UserCircle,
+  Target,
+  CheckSquare,
+  Building,
+  ExternalLink
 } from 'lucide-react';
 
 const EMOJI_LIST = ['👍', '❤️', '😂', '😮', '😢', '🎉', '🔥', '👀'];
 
+// Channel type icons and colors
+const CHANNEL_CONFIG = {
+  general: { icon: Hash, color: 'text-slate-600', bg: 'bg-slate-100' },
+  lead: { icon: UserCircle, color: 'text-blue-600', bg: 'bg-blue-100' },
+  deal: { icon: Target, color: 'text-emerald-600', bg: 'bg-emerald-100' },
+  task: { icon: CheckSquare, color: 'text-orange-600', bg: 'bg-orange-100' },
+  company: { icon: Building, color: 'text-purple-600', bg: 'bg-purple-100' }
+};
+
 const ChatPage = () => {
   const { token, user } = useAuth();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [channels, setChannels] = useState([]);
   const [messages, setMessages] = useState([]);
   const [members, setMembers] = useState([]);
   const [activeChannel, setActiveChannel] = useState(null);
+  const [contextEntity, setContextEntity] = useState(null);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
