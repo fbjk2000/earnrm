@@ -19,6 +19,7 @@ import PricingPage from './pages/PricingPage';
 import SupportPage from './pages/SupportPage';
 import PipelineReportPage from './pages/PipelineReportPage';
 import SubscriptionSuccessPage from './pages/SubscriptionSuccessPage';
+import ChatPage from './pages/ChatPage';
 
 import './App.css';
 
