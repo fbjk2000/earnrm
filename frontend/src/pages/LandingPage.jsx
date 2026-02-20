@@ -481,7 +481,7 @@ const LandingPage = () => {
               Loved by sales teams
             </h2>
             <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-              See what our customers have to say about upmuch.
+              See what our customers have to say about earnrm.
             </p>
           </div>
 
