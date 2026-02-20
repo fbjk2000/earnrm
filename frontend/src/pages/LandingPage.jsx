@@ -270,25 +270,38 @@ const LandingPage = () => {
 
             {/* Hero image with glass card overlay */}
             <div className="relative">
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-200">
+              <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-slate-200/50 border border-slate-100">
                 <img
                   src="https://customer-assets.emergentagent.com/job_ec98bdb3-0edd-4c4d-a872-3506f378be5d/artifacts/dxg4md11_Goddess%20of%20Europe.png"
                   alt="earnrm - European Business Excellence"
                   className="w-full"
                   data-testid="hero-image"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
               </div>
               
-              {/* Floating card */}
-              <div className="absolute -bottom-6 -left-6 bg-white rounded-xl shadow-lg p-4 border border-slate-100 animate-fade-in">
+              {/* Floating glass card - Apple Liquid Glass style */}
+              <div className="absolute -bottom-4 -left-4 lg:-bottom-6 lg:-left-6 bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-200/50 p-4 border border-white/50">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                    <Check className="w-5 h-5 text-[#A100FF]" />
+                  <div className="w-11 h-11 bg-gradient-to-br from-[#A100FF] to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30">
+                    <Check className="w-5 h-5 text-white" />
                   </div>
                   <div>
                     <p className="font-semibold text-slate-900">New Lead Scored</p>
                     <p className="text-sm text-slate-500">AI Score: 87/100</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Second floating card - top right */}
+              <div className="absolute -top-3 -right-3 lg:-top-4 lg:-right-4 bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-200/50 p-3 border border-white/50">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
+                    <ArrowRight className="w-4 h-4 text-white rotate-[-45deg]" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">Revenue</p>
+                    <p className="font-bold text-emerald-600">+34%</p>
                   </div>
                 </div>
               </div>
@@ -297,22 +310,25 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Lead Magnet Banner */}
-      <section className="py-12 px-6 bg-gradient-to-r from-earnrm-purple to-purple-700">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <BookOpen className="w-8 h-8 text-white" />
-            <h2 className="text-2xl lg:text-3xl font-bold text-white" data-testid="lead-magnet-banner-title">
-              Free LinkedIn Lead Generation Playbook
-            </h2>
+      {/* Lead Magnet Banner - Apple-inspired glass effect */}
+      <section className="py-16 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#A100FF] to-purple-600" />
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iNCIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />
+        <div className="max-w-4xl mx-auto text-center relative">
+          <div className="inline-flex items-center gap-3 mb-6 bg-white/10 backdrop-blur-sm px-5 py-2 rounded-full">
+            <BookOpen className="w-5 h-5 text-white" />
+            <span className="text-white/90 font-medium">Free Resource</span>
           </div>
-          <p className="text-purple-100 mb-6 max-w-2xl mx-auto">
+          <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4" data-testid="lead-magnet-banner-title">
+            LinkedIn Lead Generation Playbook
+          </h2>
+          <p className="text-white/80 mb-8 max-w-2xl mx-auto text-lg">
             Learn the exact strategies our top users use to generate 10x more qualified leads from LinkedIn. 
             Includes templates, scripts, and automation tips.
           </p>
           <Button
             size="lg"
-            className="bg-white text-[#A100FF] hover:bg-purple-50 h-12 px-8"
+            className="bg-white text-[#A100FF] hover:bg-white/90 h-14 px-8 rounded-2xl text-base font-semibold shadow-xl transition-all hover:-translate-y-0.5"
             onClick={() => setShowLeadMagnet(true)}
             data-testid="lead-magnet-banner-btn"
           >
