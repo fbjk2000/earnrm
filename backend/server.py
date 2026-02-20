@@ -4280,6 +4280,269 @@ async def mark_all_notifications_read(current_user: dict = Depends(get_current_u
     )
     return {"message": "All notifications marked as read"}
 
+# ==================== CALLS & RECORDINGS ====================
+
+# Twilio Configuration
+TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID')
+TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
+TWILIO_PHONE_FROM = os.environ.get('TWILIO_PHONE_FROM')
+FRONTEND_URL = os.environ.get('FRONTEND_URL', '')
+
+class CallInitiate(BaseModel):
+    lead_id: str
+    message: Optional[str] = "Thank you for your interest"
+
+class CallAnalyzeRequest(BaseModel):
+    call_id: str
+
+def get_twilio_client():
+    if not all([TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_FROM]):
+        raise HTTPException(status_code=503, detail="Twilio is not configured. Please add TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_PHONE_FROM to your environment.")
+    from twilio.rest import Client
+    return Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+
+@api_router.post("/calls/initiate")
+async def initiate_call(data: CallInitiate, current_user: dict = Depends(get_current_user)):
+    """Initiate an outbound call to a lead"""
+    lead = await db.leads.find_one(
+        {"lead_id": data.lead_id, "organization_id": current_user.get("organization_id")},
+        {"_id": 0}
+    )
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+
+    phone = lead.get("phone")
+    if not phone:
+        raise HTTPException(status_code=400, detail="Lead has no phone number")
+
+    # Normalize phone to E.164
+    import re as _re
+    digits = _re.sub(r'\D', '', phone)
+    if len(digits) == 10:
+        digits = '1' + digits
+    e164 = '+' + digits
+    if len(digits) < 10:
+        raise HTTPException(status_code=400, detail="Invalid phone number")
+
+    twilio = get_twilio_client()
+    call_id = str(uuid.uuid4())
+    base_url = FRONTEND_URL.rstrip('/')
+
+    try:
+        from twilio.twiml.voice_response import VoiceResponse
+        twilio_call = twilio.calls.create(
+            to=e164,
+            from_=TWILIO_PHONE_FROM,
+            url=f"{base_url}/api/calls/twiml/{call_id}",
+            record=True,
+            recording_status_callback=f"{base_url}/api/webhooks/twilio/recording-status",
+            recording_status_callback_method="POST",
+            status_callback=f"{base_url}/api/webhooks/twilio/call-status",
+            status_callback_event=["initiated", "ringing", "answered", "completed"],
+            status_callback_method="POST"
+        )
+    except Exception as e:
+        logger.error(f"Twilio call error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to initiate call: {str(e)}")
+
+    call_doc = {
+        "call_id": call_id,
+        "call_sid": twilio_call.sid,
+        "organization_id": current_user.get("organization_id"),
+        "lead_id": data.lead_id,
+        "lead_name": f"{lead.get('first_name','')} {lead.get('last_name','')}".strip(),
+        "from_number": TWILIO_PHONE_FROM,
+        "to_number": e164,
+        "status": twilio_call.status,
+        "direction": "outbound",
+        "duration": 0,
+        "recording_url": None,
+        "recording_sid": None,
+        "ai_analysis": None,
+        "initiated_by": current_user.get("user_id"),
+        "initiated_by_name": current_user.get("name"),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "ended_at": None
+    }
+    await db.calls.insert_one(call_doc)
+
+    return {
+        "call_id": call_id,
+        "call_sid": twilio_call.sid,
+        "status": twilio_call.status,
+        "to": e164,
+        "message": "Call initiated successfully"
+    }
+
+@api_router.get("/calls/twiml/{call_id}")
+async def call_twiml(call_id: str, message: str = "Thank you for your interest in our service"):
+    """Return TwiML instructions for the call"""
+    from twilio.twiml.voice_response import VoiceResponse
+    resp = VoiceResponse()
+    resp.say(message, voice="alice")
+    resp.pause(length=1)
+    resp.say("This call may be recorded for quality and training purposes.", voice="alice")
+    return Response(content=str(resp), media_type="application/xml")
+
+@api_router.post("/webhooks/twilio/call-status")
+async def twilio_call_status_webhook(request: Request):
+    """Webhook for Twilio call status updates"""
+    form = await request.form()
+    call_sid = form.get("CallSid")
+    call_status = form.get("CallStatus")
+    call_duration = form.get("CallDuration", "0")
+
+    if call_sid:
+        update = {"status": call_status}
+        if call_status == "completed":
+            update["duration"] = int(call_duration) if call_duration else 0
+            update["ended_at"] = datetime.now(timezone.utc).isoformat()
+        await db.calls.update_one({"call_sid": call_sid}, {"$set": update})
+
+    return Response(status_code=200)
+
+@api_router.post("/webhooks/twilio/recording-status")
+async def twilio_recording_status_webhook(request: Request):
+    """Webhook for Twilio recording status updates"""
+    form = await request.form()
+    call_sid = form.get("CallSid")
+    recording_sid = form.get("RecordingSid")
+    recording_url = form.get("RecordingUrl")
+    recording_status = form.get("RecordingStatus")
+    recording_duration = form.get("RecordingDuration", "0")
+
+    if call_sid and recording_status == "completed" and recording_url:
+        await db.calls.update_one(
+            {"call_sid": call_sid},
+            {"$set": {
+                "recording_url": recording_url,
+                "recording_sid": recording_sid,
+                "recording_duration": int(recording_duration) if recording_duration else 0
+            }}
+        )
+    return Response(status_code=200)
+
+@api_router.get("/calls")
+async def get_calls(
+    lead_id: Optional[str] = None,
+    limit: int = 50,
+    current_user: dict = Depends(get_current_user)
+):
+    """Get call history for the organization"""
+    org_id = current_user.get("organization_id")
+    query = {"organization_id": org_id}
+    if lead_id:
+        query["lead_id"] = lead_id
+
+    calls = await db.calls.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
+    return calls
+
+@api_router.get("/calls/{call_id}")
+async def get_call(call_id: str, current_user: dict = Depends(get_current_user)):
+    """Get a single call by ID"""
+    call = await db.calls.find_one(
+        {"call_id": call_id, "organization_id": current_user.get("organization_id")},
+        {"_id": 0}
+    )
+    if not call:
+        raise HTTPException(status_code=404, detail="Call not found")
+    return call
+
+@api_router.post("/calls/{call_id}/analyze")
+async def analyze_call(call_id: str, current_user: dict = Depends(get_current_user)):
+    """AI analysis of a call recording"""
+    call = await db.calls.find_one(
+        {"call_id": call_id, "organization_id": current_user.get("organization_id")},
+        {"_id": 0}
+    )
+    if not call:
+        raise HTTPException(status_code=404, detail="Call not found")
+
+    if not call.get("recording_url"):
+        raise HTTPException(status_code=400, detail="No recording available for this call")
+
+    try:
+        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        api_key = os.environ.get("EMERGENT_LLM_KEY")
+
+        lead = await db.leads.find_one({"lead_id": call.get("lead_id")}, {"_id": 0})
+        lead_context = ""
+        if lead:
+            lead_context = f"Lead: {lead.get('first_name','')} {lead.get('last_name','')}, Company: {lead.get('company','N/A')}, Title: {lead.get('job_title','N/A')}"
+
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"call_analysis_{call_id}",
+            system_message="""You are a sales call analyst. Analyze the call metadata and provide actionable feedback. Return a JSON object with these keys:
+- summary: 2-3 sentence summary of what likely happened
+- sentiment: "positive", "neutral", or "negative"
+- score: 1-10 rating of the call quality
+- strengths: array of 2-3 things that went well
+- improvements: array of 2-3 areas for improvement
+- next_steps: array of 2-3 recommended follow-up actions
+Return ONLY valid JSON, no markdown."""
+        ).with_model("openai", "gpt-5.2")
+
+        prompt = f"""Analyze this sales call:
+- Direction: {call.get('direction','outbound')}
+- Duration: {call.get('duration', 0)} seconds
+- Status: {call.get('status','unknown')}
+- Called by: {call.get('initiated_by_name','Unknown')}
+- {lead_context}
+- Recording available: Yes
+Provide your analysis."""
+
+        user_message = UserMessage(text=prompt)
+        response = await chat.send_message(user_message)
+
+        import json
+        try:
+            analysis = json.loads(response.strip().strip('```json').strip('```'))
+        except:
+            analysis = {
+                "summary": response[:200],
+                "sentiment": "neutral",
+                "score": 5,
+                "strengths": ["Call was completed"],
+                "improvements": ["Could not parse detailed analysis"],
+                "next_steps": ["Follow up with the lead"]
+            }
+
+        await db.calls.update_one(
+            {"call_id": call_id},
+            {"$set": {"ai_analysis": analysis}}
+        )
+        return {"call_id": call_id, "analysis": analysis}
+
+    except Exception as e:
+        logger.error(f"Call analysis error: {e}")
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
+
+@api_router.get("/calls/stats/overview")
+async def get_call_stats(current_user: dict = Depends(get_current_user)):
+    """Get call statistics for the organization"""
+    org_id = current_user.get("organization_id")
+    total = await db.calls.count_documents({"organization_id": org_id})
+    completed = await db.calls.count_documents({"organization_id": org_id, "status": "completed"})
+    
+    pipeline = [
+        {"$match": {"organization_id": org_id, "duration": {"$gt": 0}}},
+        {"$group": {"_id": None, "avg_duration": {"$avg": "$duration"}, "total_duration": {"$sum": "$duration"}}}
+    ]
+    agg = await db.calls.aggregate(pipeline).to_list(1)
+    avg_duration = round(agg[0]["avg_duration"], 1) if agg else 0
+    total_duration = agg[0]["total_duration"] if agg else 0
+
+    analyzed = await db.calls.count_documents({"organization_id": org_id, "ai_analysis": {"$ne": None}})
+
+    return {
+        "total_calls": total,
+        "completed_calls": completed,
+        "avg_duration_seconds": avg_duration,
+        "total_duration_seconds": total_duration,
+        "analyzed_calls": analyzed
+    }
+
 # ==================== BASIC ROUTES ====================
 
 @api_router.get("/")
