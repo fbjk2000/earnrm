@@ -786,46 +786,74 @@ class CRMTester:
         return success
 
 def main():
-    print("🚀 Testing New CRM Features (4 Features)")
-    print("=" * 50)
+    print("🚀 Testing CRM Functionalities - Data Isolation & User Permissions")
+    print("=" * 70)
     
-    tester = NewFeaturesTester()
+    tester = CRMTester()
     
     # Test 1: Super Admin Login
+    print("\n👑 Testing Super Admin Login")
+    print("-" * 30)
     if not tester.test_super_admin_login():
         print("❌ Super admin login failed - stopping tests")
         return 1
 
-    print("\n🔧 Testing Feature 1: Pipeline Management")
+    # Test 2: Regular User Registration & Login
+    print("\n👤 Testing Regular User Registration & Login")
     print("-" * 30)
-    # Get current org settings
-    org_settings = tester.test_organization_settings_get()
-    # Update deal stages
-    tester.test_organization_settings_update_deal_stages()
+    if not tester.test_regular_user_registration():
+        print("❌ User registration failed - stopping tests")
+        return 1
     
-    print("\n🔧 Testing Feature 2: User List & Role Management")
+    if not tester.test_regular_user_login():
+        print("❌ User login failed - stopping tests")
+        return 1
+
+    # Test 3: Lead Management (Both Users)
+    print("\n📋 Testing Lead Management")
     print("-" * 30)
-    # Get organization members
-    members = tester.test_organization_members_list()
-    # Test role change
-    tester.test_update_member_role(members)
-    
-    print("\n🔧 Testing Feature 3: Affiliate Toggle")
+    tester.test_lead_creation("super_admin")
+    tester.test_lead_creation("test_user")
+    tester.test_lead_listing("super_admin")
+    tester.test_lead_listing("test_user")
+    tester.test_lead_update("super_admin")
+    tester.test_lead_update("test_user")
+
+    # Test 4: Deal Management (Both Users)
+    print("\n💼 Testing Deal Management")
     print("-" * 30)
-    # Enable affiliate program
-    tester.test_organization_settings_toggle_affiliate()
-    
-    print("\n🔧 Testing Feature 4: Affiliate Self-Enrollment")
+    tester.test_deal_creation("super_admin")
+    tester.test_deal_creation("test_user")
+    tester.test_deal_listing("super_admin")
+    tester.test_deal_listing("test_user")
+
+    # Test 5: Task Management (Both Users)
+    print("\n✅ Testing Task Management")
     print("-" * 30)
-    # Test affiliate enrollment
-    tester.test_affiliate_enroll()
-    # Check affiliate status
-    tester.test_affiliate_status()
-    # Test unenrollment
-    tester.test_affiliate_unenroll()
+    tester.test_task_creation("super_admin")
+    tester.test_task_creation("test_user")
+    tester.test_task_listing("super_admin")
+    tester.test_task_listing("test_user")
+
+    # Test 6: Company Management (Both Users)
+    print("\n🏢 Testing Company Management")
+    print("-" * 30)
+    tester.test_company_creation("super_admin")
+    tester.test_company_creation("test_user")
+
+    # Test 7: Organization Settings Access (Both Users)
+    print("\n⚙️ Testing Organization Settings Access")
+    print("-" * 30)
+    tester.test_organization_settings_access("super_admin")
+    tester.test_organization_settings_access("test_user")
+
+    # Test 8: Data Isolation
+    print("\n🔒 Testing Data Isolation")
+    print("-" * 30)
+    tester.test_data_isolation_cross_org_access()
 
     # Print results
-    print("\n" + "=" * 50)
+    print("\n" + "=" * 70)
     print(f"📊 Tests completed: {tester.tests_passed}/{tester.tests_run}")
     
     if tester.failed_tests:
@@ -835,6 +863,15 @@ def main():
     
     success_rate = (tester.tests_passed / tester.tests_run) * 100 if tester.tests_run > 0 else 0
     print(f"✅ Success rate: {success_rate:.1f}%")
+    
+    # Summary for main agent
+    print(f"\n📋 SUMMARY FOR MAIN AGENT:")
+    print(f"   - Super Admin Login: {'✅' if tester.super_admin_data.get('token') else '❌'}")
+    print(f"   - Regular User Registration: {'✅' if tester.test_user_data.get('token') else '❌'}")
+    print(f"   - Lead Creation (Both Users): {'✅' if tester.super_admin_data.get('lead_id') and tester.test_user_data.get('lead_id') else '❌'}")
+    print(f"   - Deal Creation (Both Users): {'✅' if tester.super_admin_data.get('deal_id') and tester.test_user_data.get('deal_id') else '❌'}")
+    print(f"   - Task Creation (Both Users): {'✅' if tester.super_admin_data.get('task_id') and tester.test_user_data.get('task_id') else '❌'}")
+    print(f"   - Company Creation (Both Users): {'✅' if tester.super_admin_data.get('company_id') and tester.test_user_data.get('company_id') else '❌'}")
     
     return 0 if success_rate >= 80 else 1
 
