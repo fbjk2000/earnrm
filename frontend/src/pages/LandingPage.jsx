@@ -200,31 +200,37 @@ const LandingPage = () => {
         )}
       </nav>
 
-      {/* Hero Section */}
-      <section className="pt-28 pb-16 px-6">
-        <div className="max-w-7xl mx-auto">
+      {/* Hero Section - Apple-inspired glass design */}
+      <section className="pt-24 pb-16 px-6 relative overflow-hidden">
+        {/* Subtle gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 via-white to-slate-50/50" />
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#A100FF]/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-purple-100/30 rounded-full blur-3xl" />
+        
+        <div className="max-w-7xl mx-auto relative">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              {/* Full Logo with Tagline */}
+            <div className="space-y-8">
+              {/* Logo Wordmark - larger and prominent */}
               <img 
-                src="https://customer-assets.emergentagent.com/job_leadhub-app-2/artifacts/vhcjdzuc_earnrm_logo_horizontal_light_tagline_purpleword.png" 
-                alt="earnrm - Your CRM that pAIs you back" 
-                className="h-14 lg:h-16"
+                src="https://customer-assets.emergentagent.com/job_leadhub-app-2/artifacts/8movyjrt_earnrm_wordmark_purple.svg" 
+                alt="earnrm" 
+                className="h-12 lg:h-14"
               />
               
-              <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-[#111111] tracking-tight leading-tight" data-testid="hero-title">
+              <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-[#111111] tracking-tight leading-[1.1]" data-testid="hero-title">
                 Your CRM that
-                <span> p<span className="text-[#A100FF] font-black">AI</span>s</span> you back
+                <br />
+                <span>p<span className="text-[#A100FF]">AI</span>s</span> you back
               </h1>
               
-              <p className="text-lg text-slate-600 max-w-lg leading-relaxed" data-testid="hero-description">
+              <p className="text-lg lg:text-xl text-slate-600 max-w-lg leading-relaxed" data-testid="hero-description">
                 The CRM that runs your marketing and sales department. LinkedIn lead generation, 
                 AI-powered insights, and team collaboration — without the complexity.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
                 <Link to="/signup">
-                  <Button size="lg" className="bg-[#A100FF] hover:bg-purple-700 h-12 px-8" data-testid="hero-cta-primary">
+                  <Button size="lg" className="bg-[#A100FF] hover:bg-purple-600 h-14 px-8 rounded-2xl text-base font-semibold shadow-lg shadow-purple-500/25 transition-all hover:shadow-xl hover:shadow-purple-500/30 hover:-translate-y-0.5" data-testid="hero-cta-primary">
                     Start Free Trial
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
@@ -232,34 +238,37 @@ const LandingPage = () => {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="h-12 px-8 border-[#A100FF] text-[#A100FF] hover:bg-purple-50"
+                  className="h-14 px-8 rounded-2xl text-base font-semibold border-2 border-slate-200 hover:border-[#A100FF] hover:text-[#A100FF] bg-white/80 backdrop-blur-sm transition-all"
                   onClick={() => setShowLeadMagnet(true)}
                   data-testid="hero-cta-guide"
                 >
                   <Download className="w-5 h-5 mr-2" />
-                  Get Free LinkedIn Guide
+                  Free LinkedIn Guide
                 </Button>
               </div>
 
-              <div className="flex items-center gap-6 pt-2">
+              {/* Social proof with glass effect */}
+              <div className="flex items-center gap-5 pt-4">
                 <div className="flex -space-x-3">
-                  <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=faces" alt="User" className="w-10 h-10 rounded-full border-2 border-white object-cover" />
-                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=faces" alt="User" className="w-10 h-10 rounded-full border-2 border-white object-cover" />
-                  <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=80&h=80&fit=crop&crop=faces" alt="User" className="w-10 h-10 rounded-full border-2 border-white object-cover" />
-                  <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=faces" alt="User" className="w-10 h-10 rounded-full border-2 border-white object-cover" />
-                  <div className="w-10 h-10 rounded-full border-2 border-white bg-[#A100FF] flex items-center justify-center text-white text-xs font-bold">+500</div>
+                  <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=faces" alt="User" className="w-11 h-11 rounded-full border-2 border-white object-cover shadow-sm" />
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=faces" alt="User" className="w-11 h-11 rounded-full border-2 border-white object-cover shadow-sm" />
+                  <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=80&h=80&fit=crop&crop=faces" alt="User" className="w-11 h-11 rounded-full border-2 border-white object-cover shadow-sm" />
+                  <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=faces" alt="User" className="w-11 h-11 rounded-full border-2 border-white object-cover shadow-sm" />
+                  <div className="w-11 h-11 rounded-full border-2 border-white bg-gradient-to-br from-[#A100FF] to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">+500</div>
                 </div>
                 <div>
-                  <div className="flex items-center">
+                  <div className="flex items-center gap-0.5">
                     {[1, 2, 3, 4, 5].map((i) => (
                       <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />
                     ))}
+                    <span className="ml-2 text-sm font-semibold text-slate-700">4.9</span>
                   </div>
-                  <p className="text-sm text-slate-600">Trusted by 500+ teams</p>
+                  <p className="text-sm text-slate-500">Trusted by 500+ teams</p>
                 </div>
               </div>
             </div>
 
+            {/* Hero image with glass card overlay */}
             <div className="relative">
               <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-200">
                 <img
