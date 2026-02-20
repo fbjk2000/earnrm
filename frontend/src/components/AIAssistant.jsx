@@ -381,6 +381,7 @@ export const LeadSummary = ({ leadId, leadName }) => {
             AI Lead Summary
             <Badge variant="outline">{leadName}</Badge>
           </DialogTitle>
+          <DialogDescription>AI-powered analysis of this lead's profile and activity</DialogDescription>
         </DialogHeader>
         
         {loading ? (
