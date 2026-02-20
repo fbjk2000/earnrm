@@ -4543,31 +4543,6 @@ Provide your analysis."""
         logger.error(f"Call analysis error: {e}")
         raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
 
-@api_router.get("/calls/stats/overview")
-async def get_call_stats(current_user: dict = Depends(get_current_user)):
-    """Get call statistics for the organization"""
-    org_id = current_user.get("organization_id")
-    total = await db.calls.count_documents({"organization_id": org_id})
-    completed = await db.calls.count_documents({"organization_id": org_id, "status": "completed"})
-    
-    pipeline = [
-        {"$match": {"organization_id": org_id, "duration": {"$gt": 0}}},
-        {"$group": {"_id": None, "avg_duration": {"$avg": "$duration"}, "total_duration": {"$sum": "$duration"}}}
-    ]
-    agg = await db.calls.aggregate(pipeline).to_list(1)
-    avg_duration = round(agg[0]["avg_duration"], 1) if agg else 0
-    total_duration = agg[0]["total_duration"] if agg else 0
-
-    analyzed = await db.calls.count_documents({"organization_id": org_id, "ai_analysis": {"$ne": None}})
-
-    return {
-        "total_calls": total,
-        "completed_calls": completed,
-        "avg_duration_seconds": avg_duration,
-        "total_duration_seconds": total_duration,
-        "analyzed_calls": analyzed
-    }
-
 # ==================== BASIC ROUTES ====================
 
 @api_router.get("/")
