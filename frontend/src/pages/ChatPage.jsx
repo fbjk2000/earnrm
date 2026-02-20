@@ -192,9 +192,32 @@ const ChatPage = () => {
   useEffect(() => {
     if (activeChannel) {
       fetchMessages(activeChannel.channel_id);
-      setSearchParams({ channel: activeChannel.channel_id });
+      // Update URL based on channel type
+      if (activeChannel.channel_type && activeChannel.channel_type !== 'general' && activeChannel.related_id) {
+        setSearchParams({ type: activeChannel.channel_type, id: activeChannel.related_id });
+      } else {
+        setSearchParams({ channel: activeChannel.channel_id });
+      }
     }
   }, [activeChannel]);
+
+  // Handle channel selection with proper context reset
+  const handleChannelSelect = (channel) => {
+    setActiveChannel(channel);
+    setContextEntity(channel.entity || null);
+  };
+
+  // Get the link to navigate to the related entity
+  const getEntityLink = () => {
+    if (!activeChannel || !activeChannel.channel_type || activeChannel.channel_type === 'general') return null;
+    const links = {
+      lead: `/leads`,
+      deal: `/deals`,
+      task: `/tasks`,
+      company: `/companies`
+    };
+    return links[activeChannel.channel_type];
+  };
 
   useEffect(() => {
     // Poll for new messages every 3 seconds
