@@ -191,9 +191,9 @@ class DealCreate(BaseModel):
     expected_close_date: Optional[datetime] = None
     tags: List[str] = []
     notes: Optional[str] = None
-    # Mandatory task when creating a deal
-    task_title: str  # Required
-    task_owner_id: str  # Required - who owns the task
+    # Optional task when creating a deal
+    task_title: Optional[str] = None
+    task_owner_id: Optional[str] = None
     task_description: Optional[str] = None
     task_due_date: Optional[datetime] = None
 
