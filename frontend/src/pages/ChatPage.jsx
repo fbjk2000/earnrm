@@ -436,22 +436,79 @@ const ChatPage = () => {
             </div>
           </CardHeader>
           <CardContent className="flex-1 p-2 overflow-auto">
-            <div className="space-y-1">
-              {channels.map((channel) => (
-                <button
-                  key={channel.channel_id}
-                  onClick={() => setActiveChannel(channel)}
-                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors ${
-                    activeChannel?.channel_id === channel.channel_id
-                      ? 'bg-purple-100 text-[#A100FF]'
-                      : 'hover:bg-slate-100 text-slate-700'
-                  }`}
-                  data-testid={`channel-${channel.channel_id}`}
-                >
-                  <Hash className="w-4 h-4 flex-shrink-0" />
-                  <span className="truncate">{channel.name}</span>
-                </button>
-              ))}
+            {/* Group channels by type */}
+            <div className="space-y-4">
+              {/* General Channels */}
+              <div className="space-y-1">
+                <p className="text-xs font-semibold text-slate-500 px-3 uppercase">Channels</p>
+                {channels.filter(c => c.channel_type === 'general' || !c.channel_type).map((channel) => {
+                  const config = CHANNEL_CONFIG[channel.channel_type || 'general'];
+                  const Icon = config.icon;
+                  return (
+                    <button
+                      key={channel.channel_id}
+                      onClick={() => handleChannelSelect(channel)}
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors ${
+                        activeChannel?.channel_id === channel.channel_id
+                          ? 'bg-purple-100 text-[#A100FF]'
+                          : 'hover:bg-slate-100 text-slate-700'
+                      }`}
+                      data-testid={`channel-${channel.channel_id}`}
+                    >
+                      <Icon className="w-4 h-4 flex-shrink-0" />
+                      <span className="truncate">{channel.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              
+              {/* Contextual Channels - Leads */}
+              {channels.filter(c => c.channel_type === 'lead').length > 0 && (
+                <div className="space-y-1">
+                  <p className="text-xs font-semibold text-slate-500 px-3 uppercase flex items-center gap-1">
+                    <UserCircle className="w-3 h-3" /> Lead Discussions
+                  </p>
+                  {channels.filter(c => c.channel_type === 'lead').map((channel) => (
+                    <button
+                      key={channel.channel_id}
+                      onClick={() => handleChannelSelect(channel)}
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors ${
+                        activeChannel?.channel_id === channel.channel_id
+                          ? 'bg-blue-100 text-blue-700'
+                          : 'hover:bg-slate-100 text-slate-700'
+                      }`}
+                      data-testid={`channel-${channel.channel_id}`}
+                    >
+                      <UserCircle className="w-4 h-4 flex-shrink-0 text-blue-600" />
+                      <span className="truncate">{channel.name}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              
+              {/* Contextual Channels - Deals */}
+              {channels.filter(c => c.channel_type === 'deal').length > 0 && (
+                <div className="space-y-1">
+                  <p className="text-xs font-semibold text-slate-500 px-3 uppercase flex items-center gap-1">
+                    <Target className="w-3 h-3" /> Deal Discussions
+                  </p>
+                  {channels.filter(c => c.channel_type === 'deal').map((channel) => (
+                    <button
+                      key={channel.channel_id}
+                      onClick={() => handleChannelSelect(channel)}
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors ${
+                        activeChannel?.channel_id === channel.channel_id
+                          ? 'bg-emerald-100 text-emerald-700'
+                          : 'hover:bg-slate-100 text-slate-700'
+                      }`}
+                      data-testid={`channel-${channel.channel_id}`}
+                    >
+                      <Target className="w-4 h-4 flex-shrink-0 text-emerald-600" />
+                      <span className="truncate">{channel.name}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </CardContent>
 
