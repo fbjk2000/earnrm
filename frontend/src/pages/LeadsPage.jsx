@@ -409,6 +409,18 @@ const LeadsPage = () => {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
+                            <DropdownMenuItem asChild>
+                              <LeadSummary 
+                                leadId={lead.lead_id} 
+                                leadName={`${lead.first_name} ${lead.last_name}`}
+                              />
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                              <AIEmailComposer 
+                                leadId={lead.lead_id} 
+                                leadName={`${lead.first_name} ${lead.last_name}`}
+                              />
+                            </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleScoreLead(lead.lead_id)}>
                               <Zap className="w-4 h-4 mr-2" />
                               AI Score
