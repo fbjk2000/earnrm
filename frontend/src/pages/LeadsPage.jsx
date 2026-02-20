@@ -434,6 +434,10 @@ const LeadsPage = () => {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => navigate(`/chat?type=lead&id=${lead.lead_id}`)}>
+                              <MessageSquare className="w-4 h-4 mr-2" />
+                              Discuss Lead
+                            </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleScoreLead(lead.lead_id)}>
                               <Zap className="w-4 h-4 mr-2" />
                               AI Score
