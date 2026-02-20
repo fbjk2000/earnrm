@@ -65,6 +65,7 @@ export const SmartSearch = ({ onSelectResult }) => {
             <Sparkles className="w-5 h-5 text-[#A100FF]" />
             AI Smart Search
           </DialogTitle>
+          <DialogDescription>Search across leads, deals, tasks, and companies using natural language</DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4 pt-4">
