@@ -81,8 +81,86 @@ class CRMTester:
             self.organization_id = response.get('organization_id')
             print(f"   Super admin role: {response.get('role', 'Not set')}")
             print(f"   Organization ID: {self.organization_id}")
+            # Store super admin data
+            self.super_admin_data = {
+                'token': self.token,
+                'user_info': response,
+                'organization_id': self.organization_id
+            }
             return True
         return False
+
+    def test_regular_user_registration(self):
+        """Test regular user registration with new organization"""
+        timestamp = datetime.now().strftime('%H%M%S')
+        success, response = self.run_test(
+            "Regular User Registration",
+            "POST",
+            "api/auth/register",
+            200,
+            data={
+                "email": f"testuser{timestamp}@testorg.com",
+                "password": "TestPassword123",
+                "name": f"Test User {timestamp}",
+                "organization_name": f"Test Organization {timestamp}"
+            }
+        )
+        if success and 'token' in response:
+            print(f"   Created user: {response.get('name')}")
+            print(f"   Organization: {response.get('organization_id')}")
+            print(f"   Role: {response.get('role', 'Not set')}")
+            # Store test user data
+            self.test_user_data = {
+                'token': response['token'],
+                'user_info': response,
+                'organization_id': response.get('organization_id'),
+                'email': f"testuser{timestamp}@testorg.com",
+                'password': "TestPassword123"
+            }
+            return True
+        return False
+
+    def test_regular_user_login(self):
+        """Test regular user login"""
+        if not self.test_user_data.get('email'):
+            print("   No test user created, skipping login test")
+            return False
+            
+        success, response = self.run_test(
+            "Regular User Login",
+            "POST",
+            "api/auth/login",
+            200,
+            data={
+                "email": self.test_user_data['email'],
+                "password": self.test_user_data['password']
+            }
+        )
+        if success and 'token' in response:
+            print(f"   Login successful for: {response.get('name')}")
+            print(f"   Role: {response.get('role', 'Not set')}")
+            # Update test user data with fresh token
+            self.test_user_data['token'] = response['token']
+            self.test_user_data['user_info'] = response
+            return True
+        return False
+
+    def switch_to_user(self, user_type="super_admin"):
+        """Switch context to different user"""
+        if user_type == "super_admin":
+            data = self.super_admin_data
+        elif user_type == "test_user":
+            data = self.test_user_data
+        else:
+            return False
+            
+        if not data.get('token'):
+            return False
+            
+        self.token = data['token']
+        self.user_info = data['user_info']
+        self.organization_id = data['organization_id']
+        return True
 
     # ==================== NEW FEATURES TESTS ====================
     
