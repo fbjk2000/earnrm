@@ -418,16 +418,16 @@ const LandingPage = () => {
                     Advanced AI features
                   </li>
                   <li className="flex items-center text-slate-600">
-                    <Check className="w-5 h-5 text-emerald-500 mr-2" />
+                    <Check className="w-5 h-5 text-earnrm-purple mr-2" />
                     LinkedIn integration
                   </li>
                   <li className="flex items-center text-slate-600">
-                    <Check className="w-5 h-5 text-emerald-500 mr-2" />
+                    <Check className="w-5 h-5 text-earnrm-purple mr-2" />
                     Priority support
                   </li>
                 </ul>
                 <Link to="/signup">
-                  <Button className="w-full bg-indigo-600 hover:bg-indigo-700" data-testid="pricing-pro-btn">
+                  <Button className="w-full bg-earnrm-purple hover:bg-purple-700" data-testid="pricing-pro-btn">
                     Start Free Trial
                   </Button>
                 </Link>
@@ -443,22 +443,22 @@ const LandingPage = () => {
                   <span className="text-4xl font-bold text-slate-900">€12</span>
                   <span className="text-slate-600">/user/month</span>
                 </div>
-                <p className="text-emerald-600 font-medium mb-6">Save 20% annually</p>
+                <p className="text-earnrm-purple font-medium mb-6">Save 20% annually</p>
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-center text-slate-600">
-                    <Check className="w-5 h-5 text-emerald-500 mr-2" />
+                    <Check className="w-5 h-5 text-earnrm-purple mr-2" />
                     Everything in Pro
                   </li>
                   <li className="flex items-center text-slate-600">
-                    <Check className="w-5 h-5 text-emerald-500 mr-2" />
+                    <Check className="w-5 h-5 text-earnrm-purple mr-2" />
                     20% discount
                   </li>
                   <li className="flex items-center text-slate-600">
-                    <Check className="w-5 h-5 text-emerald-500 mr-2" />
+                    <Check className="w-5 h-5 text-earnrm-purple mr-2" />
                     5% extra for crypto
                   </li>
                   <li className="flex items-center text-slate-600">
-                    <Shield className="w-5 h-5 text-indigo-500 mr-2" />
+                    <Shield className="w-5 h-5 text-purple-500 mr-2" />
                     Stripe, PayPal, ETH
                   </li>
                 </ul>
@@ -525,7 +525,7 @@ const LandingPage = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/signup">
-              <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 h-12 px-8" data-testid="cta-signup">
+              <Button size="lg" className="bg-earnrm-purple hover:bg-purple-700 h-12 px-8" data-testid="cta-signup">
                 Start Free Trial
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
@@ -546,7 +546,7 @@ const LandingPage = () => {
             {/* Company Info */}
             <div className="md:col-span-2">
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-earnrm-purple rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-lg">U</span>
                 </div>
                 <span className="text-xl font-semibold text-white">upmuch</span>
@@ -606,16 +606,16 @@ const LandingPage = () => {
         <DialogContent className="max-w-md" data-testid="lead-magnet-modal">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl">
-              <BookOpen className="w-6 h-6 text-indigo-600" />
+              <BookOpen className="w-6 h-6 text-earnrm-purple" />
               Free LinkedIn Lead Generation Playbook
             </DialogTitle>
           </DialogHeader>
           
           {!downloadReady ? (
             <form onSubmit={handleLeadMagnetSubmit} className="space-y-4 pt-4">
-              <div className="p-4 bg-indigo-50 rounded-lg mb-4">
-                <p className="text-sm text-indigo-800 font-medium mb-2">What you'll learn:</p>
-                <ul className="text-sm text-indigo-700 space-y-1">
+              <div className="p-4 bg-purple-50 rounded-lg mb-4">
+                <p className="text-sm text-purple-800 font-medium mb-2">What you'll learn:</p>
+                <ul className="text-sm text-purple-700 space-y-1">
                   <li className="flex items-center gap-2">
                     <Check className="w-4 h-4" />
                     Profile optimization for lead gen
@@ -660,7 +660,7 @@ const LandingPage = () => {
 
               <Button
                 type="submit"
-                className="w-full bg-indigo-600 hover:bg-indigo-700 h-12"
+                className="w-full bg-earnrm-purple hover:bg-purple-700 h-12"
                 disabled={submitting}
                 data-testid="lead-magnet-submit"
               >
@@ -680,8 +680,8 @@ const LandingPage = () => {
             </form>
           ) : (
             <div className="text-center py-6">
-              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Check className="w-8 h-8 text-emerald-600" />
+              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Check className="w-8 h-8 text-earnrm-purple" />
               </div>
               <h3 className="text-lg font-semibold text-slate-900 mb-2">You're all set!</h3>
               <p className="text-slate-600 mb-6">
@@ -689,7 +689,7 @@ const LandingPage = () => {
               </p>
               <Button
                 onClick={handleDownload}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 h-12"
+                className="w-full bg-earnrm-purple hover:bg-purple-700 h-12"
                 data-testid="lead-magnet-download"
               >
                 <Download className="w-5 h-5 mr-2" />
