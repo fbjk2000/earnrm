@@ -52,10 +52,11 @@ const DashboardLayout = ({ children }) => {
       {/* Mobile Header */}
       <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200 h-16 flex items-center justify-between px-4">
         <Link to="/dashboard" className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-[#A100FF] rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-lg">U</span>
-          </div>
-          <span className="text-xl font-semibold text-slate-900">upmuch</span>
+          <img 
+            src="https://customer-assets.emergentagent.com/job_leadhub-app-2/artifacts/u9efkh3m_earnrm_logo_horizontal_light_notag_purpleword.png" 
+            alt="earnrm" 
+            className="h-8"
+          />
         </Link>
         <Button
           variant="ghost"
