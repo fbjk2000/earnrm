@@ -19,7 +19,9 @@ import {
   Phone,
   Linkedin,
   Building,
-  Filter
+  Filter,
+  Sparkles,
+  FileText
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -27,6 +29,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '../components/ui/dropdown-menu';
+import { SmartSearch, AIEmailComposer, LeadSummary } from '../components/AIAssistant';
 
 const LeadsPage = () => {
   const { token } = useAuth();
