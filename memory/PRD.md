@@ -67,6 +67,15 @@ earnrm is an AI-powered CRM with the slogan "Your CRM that pAIs you back". Featu
   - Smart Search: Natural language search across CRM data (leads, deals, tasks, companies)
   - AI Email Drafting: Generate personalized sales emails with purpose/tone selection
   - Lead Summary Generation: AI-powered analysis of lead profiles with engagement assessment
+- [x] **Team Chat (Feb 20, 2026)**:
+  - Real-time messaging with 3-second polling
+  - Channel-based organization (auto-created General channel)
+  - Create custom channels for teams/projects
+  - @mention teammates with notifications
+  - Emoji reactions (👍❤️😂😮😢🎉🔥👀)
+  - Reply to messages
+  - Edit/delete own messages
+  - Team member list with click-to-mention
 
 ## Upcoming Features (User Requested)
 - **Team Chat**: Real-time collaboration on leads and opportunities within organizations
