@@ -73,6 +73,29 @@ const ChatPage = () => {
 
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
+  // Load contextual channel from URL params
+  const loadContextualChannel = useCallback(async (contextType, contextId) => {
+    try {
+      const response = await axios.get(`${API}/chat/context/${contextType}/${contextId}`, {
+        headers,
+        withCredentials: true
+      });
+      setActiveChannel(response.data);
+      setContextEntity(response.data.entity);
+      // Add to channels list if not already there
+      setChannels(prev => {
+        const exists = prev.find(c => c.channel_id === response.data.channel_id);
+        if (!exists) {
+          return [...prev, response.data];
+        }
+        return prev;
+      });
+    } catch (error) {
+      console.error('Failed to load contextual channel:', error);
+      toast.error('Failed to load discussion');
+    }
+  }, [headers]);
+
   // Fetch channels
   const fetchChannels = useCallback(async () => {
     try {
@@ -82,19 +105,32 @@ const ChatPage = () => {
       });
       setChannels(response.data.channels || []);
       
-      // Set active channel from URL or default to general
-      const urlChannel = searchParams.get('channel');
-      if (urlChannel) {
-        const channel = response.data.channels?.find(c => c.channel_id === urlChannel);
-        if (channel) setActiveChannel(channel);
-      } else if (response.data.channels?.length > 0) {
-        const generalChannel = response.data.channels.find(c => c.channel_id === 'general');
-        setActiveChannel(generalChannel || response.data.channels[0]);
+      // Check for contextual channel in URL
+      const contextType = searchParams.get('type');
+      const contextId = searchParams.get('id');
+      
+      if (contextType && contextId) {
+        // Load contextual channel
+        await loadContextualChannel(contextType, contextId);
+      } else {
+        // Set active channel from URL or default to general
+        const urlChannel = searchParams.get('channel');
+        if (urlChannel) {
+          const channel = response.data.channels?.find(c => c.channel_id === urlChannel);
+          if (channel) {
+            setActiveChannel(channel);
+            setContextEntity(null);
+          }
+        } else if (response.data.channels?.length > 0) {
+          const generalChannel = response.data.channels.find(c => c.channel_id === 'general');
+          setActiveChannel(generalChannel || response.data.channels[0]);
+          setContextEntity(null);
+        }
       }
     } catch (error) {
       console.error('Failed to fetch channels:', error);
     }
-  }, [headers, searchParams]);
+  }, [headers, searchParams, loadContextualChannel]);
 
   // Fetch messages for active channel
   const fetchMessages = useCallback(async (channelId) => {
