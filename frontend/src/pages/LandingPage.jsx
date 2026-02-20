@@ -546,13 +546,13 @@ const LandingPage = () => {
             {/* Company Info */}
             <div className="md:col-span-2">
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-earnrm-purple rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">U</span>
-                </div>
-                <span className="text-xl font-semibold text-white">upmuch</span>
-              </div>
+              <img 
+                src="https://customer-assets.emergentagent.com/job_leadhub-app-2/artifacts/u9efkh3m_earnrm_logo_horizontal_light_notag_purpleword.png" 
+                alt="earnrm" 
+                className="h-8 mb-4 brightness-0 invert"
+              />
               <p className="text-slate-400 text-sm mb-4">
-                AI-powered CRM for modern sales and marketing teams. Simplify your workflow, grow your business.
+                Your CRM that p<span className="text-earnrm-purple font-bold">AI</span>s you back. Simplify your workflow, grow your business.
               </p>
               <div className="text-sm text-slate-500">
                 <p className="font-medium text-slate-400">Fintery Ltd.</p>
@@ -592,10 +592,10 @@ const LandingPage = () => {
 
           <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-slate-500">
-              © {new Date().getFullYear()} upmuch by Fintery Ltd. All rights reserved.
+              © {new Date().getFullYear()} earnrm by Fintery Ltd. All rights reserved.
             </p>
             <p className="text-xs text-slate-600">
-              support@upmuch.com | Company No. registered in England & Wales
+              support@earnrm.com | Company No. registered in England & Wales
             </p>
           </div>
         </div>
