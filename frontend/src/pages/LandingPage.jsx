@@ -109,7 +109,7 @@ const LandingPage = () => {
 
   const testimonials = [
     {
-      quote: "upmuch transformed how we handle leads. The AI scoring saves us hours every week.",
+      quote: "earnrm transformed how we handle leads. The AI scoring saves us hours every week.",
       author: "Sarah Chen",
       role: "Head of Sales, TechFlow",
       image: "https://images.unsplash.com/photo-1675526607070-f5cbd71dde92?w=100&h=100&fit=crop&crop=faces"
@@ -129,21 +129,22 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center space-x-2" data-testid="logo-link">
-              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">U</span>
-              </div>
-              <span className="text-xl font-semibold text-slate-900">upmuch</span>
+              <img 
+                src="https://customer-assets.emergentagent.com/job_leadhub-app-2/artifacts/u9efkh3m_earnrm_logo_horizontal_light_notag_purpleword.png" 
+                alt="earnrm" 
+                className="h-8"
+              />
             </Link>
 
             {/* Desktop Nav */}
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-slate-600 hover:text-slate-900 transition-colors" data-testid="nav-features">Features</a>
-              <a href="#pricing" className="text-slate-600 hover:text-slate-900 transition-colors" data-testid="nav-pricing">Pricing</a>
-              <a href="#testimonials" className="text-slate-600 hover:text-slate-900 transition-colors" data-testid="nav-testimonials">Testimonials</a>
-              <Link to="/support" className="text-slate-600 hover:text-slate-900 transition-colors" data-testid="nav-support">Support</Link>
+              <a href="#features" className="text-slate-600 hover:text-earnrm-purple transition-colors" data-testid="nav-features">Features</a>
+              <a href="#pricing" className="text-slate-600 hover:text-earnrm-purple transition-colors" data-testid="nav-pricing">Pricing</a>
+              <a href="#testimonials" className="text-slate-600 hover:text-earnrm-purple transition-colors" data-testid="nav-testimonials">Testimonials</a>
+              <Link to="/support" className="text-slate-600 hover:text-earnrm-purple transition-colors" data-testid="nav-support">Support</Link>
               <button
                 onClick={() => setShowLeadMagnet(true)}
-                className="text-indigo-600 hover:text-indigo-700 font-medium transition-colors flex items-center gap-1"
+                className="text-earnrm-purple hover:text-purple-700 font-medium transition-colors flex items-center gap-1"
                 data-testid="nav-free-guide"
               >
                 <Gift className="w-4 h-4" />
@@ -156,7 +157,7 @@ const LandingPage = () => {
                 <Button variant="ghost" data-testid="login-btn">Log in</Button>
               </Link>
               <Link to="/signup">
-                <Button className="bg-indigo-600 hover:bg-indigo-700" data-testid="get-started-btn">
+                <Button className="bg-earnrm-purple hover:bg-purple-700" data-testid="get-started-btn">
                   Get Started Free
                 </Button>
               </Link>
@@ -177,13 +178,13 @@ const LandingPage = () => {
         {mobileMenuOpen && (
           <div className="md:hidden bg-white border-t border-slate-200 py-4 px-6">
             <div className="flex flex-col space-y-4">
-              <a href="#features" className="text-slate-600 hover:text-slate-900">Features</a>
-              <a href="#pricing" className="text-slate-600 hover:text-slate-900">Pricing</a>
-              <a href="#testimonials" className="text-slate-600 hover:text-slate-900">Testimonials</a>
-              <Link to="/support" className="text-slate-600 hover:text-slate-900">Support</Link>
+              <a href="#features" className="text-slate-600 hover:text-earnrm-purple">Features</a>
+              <a href="#pricing" className="text-slate-600 hover:text-earnrm-purple">Pricing</a>
+              <a href="#testimonials" className="text-slate-600 hover:text-earnrm-purple">Testimonials</a>
+              <Link to="/support" className="text-slate-600 hover:text-earnrm-purple">Support</Link>
               <button
                 onClick={() => { setShowLeadMagnet(true); setMobileMenuOpen(false); }}
-                className="text-indigo-600 font-medium text-left flex items-center gap-2"
+                className="text-earnrm-purple font-medium text-left flex items-center gap-2"
               >
                 <Gift className="w-4 h-4" />
                 Free LinkedIn Guide
@@ -192,7 +193,7 @@ const LandingPage = () => {
                 <Button variant="ghost" className="w-full justify-start">Log in</Button>
               </Link>
               <Link to="/signup">
-                <Button className="w-full bg-indigo-600 hover:bg-indigo-700">Get Started Free</Button>
+                <Button className="w-full bg-earnrm-purple hover:bg-purple-700">Get Started Free</Button>
               </Link>
             </div>
           </div>
