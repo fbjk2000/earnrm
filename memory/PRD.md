@@ -26,85 +26,63 @@ earnrm is an AI-powered CRM with the slogan "Your CRM that pAIs you back". Featu
 - **Base URL**: /api
 - **Health Check**: /api/ returns "earnrm CRM API"
 
-## Rebrand Status (Feb 20, 2026)
-- ✅ All upmuch references replaced with earnrm
-- ✅ Logo updated across all pages
-- ✅ Color scheme updated to #A100FF purple
-- ✅ Slogan "Your CRM that pAIs you back" implemented
-- ✅ Footer updated with support@earnrm.com
-- ✅ API returns "earnrm CRM API"
-
-## Core Features
-- Lead Management with AI scoring
-- Deal Pipeline (6 stages, customizable per org)
-- Task Management (Kanban)
-- Email Campaigns with Kit.com integration
-- Company/Contact Management
-- Affiliate Program (self-enrollment)
-- Multi-tier subscription (Free, Pro, Enterprise)
-
-## Integrations
-- Resend (Email - domain: earnrm.com pending verification)
-- Kit.com (Email Marketing)
-- Stripe (Payments)
-- Emergent LLM Key (AI features)
-
 ## Technical Stack
-- Frontend: React, TailwindCSS
-- Backend: FastAPI (Python)
+- Frontend: React, TailwindCSS, Shadcn UI
+- Backend: FastAPI (Python), Motor
 - Database: MongoDB
 - Auth: JWT + Emergent Google OAuth
+- Payments: Stripe
+- Email: Resend
+- AI: OpenAI GPT-5.2 via Emergent LLM Key
+- Calling: Twilio (configured via env vars)
 
 ## What's Been Implemented
 - [x] Full CRM functionality (Leads, Deals, Tasks, Companies, Campaigns)
 - [x] AI-powered lead scoring and email drafting
+- [x] Smart Search, AI Email Drafting, Lead Summary Generation
 - [x] Multi-user organizations with role management
 - [x] Customizable deal pipeline stages per organization
 - [x] Affiliate self-enrollment system
 - [x] Support page with FAQ and contact form
 - [x] Complete rebrand to earnrm (Feb 2026)
-- [x] **AI Quick Wins (Feb 20, 2026)**:
-  - Smart Search: Natural language search across CRM data (leads, deals, tasks, companies)
-  - AI Email Drafting: Generate personalized sales emails with purpose/tone selection
-  - Lead Summary Generation: AI-powered analysis of lead profiles with engagement assessment
-- [x] **Team Chat (Feb 20, 2026)**:
-  - Real-time messaging with 3-second polling
-  - Channel-based organization (auto-created General channel)
-  - Create custom channels for teams/projects
-  - @mention teammates with notifications
-  - Emoji reactions (👍❤️😂😮😢🎉🔥👀)
-  - Reply to messages
-  - Edit/delete own messages
-  - Team member list with click-to-mention
-  - **Contextual Channels** (Feb 20, 2026):
-    - Discuss specific leads with "Discuss Lead" button
-    - Discuss specific deals with "Discuss Deal" option
-    - Lead/Deal info cards in chat header
-    - Sidebar groups channels by type
-    - Link back to entity from chat
-- [x] **Team Invitations (Feb 20, 2026)**:
-  - Three invitation methods: Link, Email, CSV
-  - Generate shareable invite links (7-day expiry, 100 uses)
-  - Send email invitations to multiple addresses
-  - CSV import for bulk invites (requires 'email' column)
-  - Role selection (Member/Admin) for invites
-  - Pending invitations list with status tracking
-  - Revoke invites functionality
-  - Signup page handles invite codes from URL
-  - Invited users automatically join organization with assigned role
+- [x] Real-time Team Chat with channels, mentions, reactions
+- [x] Contextual Chat (Lead/Deal discussion channels)
+- [x] Team Invitations (Link, Email, CSV)
+- [x] **PWA Mobile App (Feb 20, 2026)**:
+  - manifest.json with app metadata, icons (192x192, 512x512)
+  - Service worker for offline caching
+  - Install prompt capture (beforeinstallprompt)
+  - Landing page updated with PWA install section
+  - Works on iOS, Android, and desktop
+- [x] **Outbound Calling & AI Analysis (Feb 20, 2026)**:
+  - Twilio integration for outbound calls with recording
+  - Calls page with stats dashboard (Total, Completed, Avg Duration, AI Analyzed)
+  - New Call dialog with lead selector and opening message
+  - Call history with search and filtering
+  - Call detail view with recording player
+  - AI call analysis (summary, score, strengths, improvements, next steps)
+  - Twilio webhooks for call status and recording status updates
+  - "Call Lead" option in Leads page dropdown
+  - Graceful handling when Twilio not configured (503 with helpful message)
 
-## Upcoming Features (User Requested)
-- **Mobile Apps**: iOS/Android apps downloadable from landing page
+## Integrations
+- Resend (Email - domain: earnrm.com pending verification)
+- Kit.com (Email Marketing)
+- Stripe (Payments)
+- Emergent LLM Key (AI features - GPT-5.2)
+- Twilio (Outbound Calling - requires user credentials)
 
-## Future/Backlog Features
+## P0 - Requires User Action
+- Twilio credentials (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_FROM) need to be configured
+- DNS/Domain routing for earnrm.com (user confirmed resolved)
+- Resend email domain verification
+
+## P1 - Upcoming Features
+- Call recording and analytics with AI-based feedback (UI built, needs Twilio keys to test)
+- Outbound call service full workflow testing
+
+## P2 - Future/Backlog
 - AI-Powered Lead Enrichment (LinkedIn data)
-- Conversation Intelligence (call recordings)
+- Conversation Intelligence (call recordings transcription)
 - Deal Forecast AI
 - AI Chatbot for website
-- Outbound call service integration
-- Recording and analytics with AI feedback on calls
-
-## Next Action Items
-- Configure earnrm.com domain DNS
-- Verify Resend domain for email sending
-- Test affiliate signup flow end-to-end
