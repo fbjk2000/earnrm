@@ -76,6 +76,12 @@ earnrm is an AI-powered CRM with the slogan "Your CRM that pAIs you back". Featu
   - Reply to messages
   - Edit/delete own messages
   - Team member list with click-to-mention
+  - **Contextual Channels** (Feb 20, 2026):
+    - Discuss specific leads with "Discuss Lead" button
+    - Discuss specific deals with "Discuss Deal" option
+    - Lead/Deal info cards in chat header
+    - Sidebar groups channels by type
+    - Link back to entity from chat
 
 ## Upcoming Features (User Requested)
 - **Mobile Apps**: iOS/Android apps downloadable from landing page
