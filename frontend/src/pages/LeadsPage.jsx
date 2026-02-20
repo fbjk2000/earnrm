@@ -210,8 +210,9 @@ const LeadsPage = () => {
                 <form onSubmit={handleAddLead} className="space-y-4 pt-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>First Name *</Label>
+                      <Label htmlFor="first_name">First Name *</Label>
                       <Input
+                        id="first_name"
                         value={newLead.first_name}
                         onChange={(e) => setNewLead({ ...newLead, first_name: e.target.value })}
                         required
@@ -219,8 +220,9 @@ const LeadsPage = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Last Name *</Label>
+                      <Label htmlFor="last_name">Last Name *</Label>
                       <Input
+                        id="last_name"
                         value={newLead.last_name}
                         onChange={(e) => setNewLead({ ...newLead, last_name: e.target.value })}
                         required
@@ -229,8 +231,9 @@ const LeadsPage = () => {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label>Email</Label>
+                    <Label htmlFor="lead_email">Email</Label>
                     <Input
+                      id="lead_email"
                       type="email"
                       value={newLead.email}
                       onChange={(e) => setNewLead({ ...newLead, email: e.target.value })}
@@ -238,41 +241,47 @@ const LeadsPage = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Phone</Label>
+                    <Label htmlFor="lead_phone">Phone</Label>
                     <Input
+                      id="lead_phone"
                       value={newLead.phone}
                       onChange={(e) => setNewLead({ ...newLead, phone: e.target.value })}
                       data-testid="lead-phone"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Company</Label>
+                    <Label htmlFor="lead_company">Company</Label>
                     <Input
+                      id="lead_company"
                       value={newLead.company}
                       onChange={(e) => setNewLead({ ...newLead, company: e.target.value })}
                       data-testid="lead-company"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Job Title</Label>
+                    <Label htmlFor="lead_job_title">Job Title</Label>
                     <Input
+                      id="lead_job_title"
                       value={newLead.job_title}
                       onChange={(e) => setNewLead({ ...newLead, job_title: e.target.value })}
                       data-testid="lead-job-title"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>LinkedIn URL</Label>
+                    <Label htmlFor="lead_linkedin">LinkedIn URL</Label>
                     <Input
+                      id="lead_linkedin"
                       value={newLead.linkedin_url}
                       onChange={(e) => setNewLead({ ...newLead, linkedin_url: e.target.value })}
                       placeholder="https://linkedin.com/in/..."
                       data-testid="lead-linkedin"
                     />
                   </div>
-                  <Button type="submit" className="w-full bg-[#A100FF] hover:bg-purple-700" data-testid="submit-lead-btn">
-                    Add Lead
-                  </Button>
+                  <div className="pt-4">
+                    <Button type="submit" className="w-full bg-[#A100FF] hover:bg-purple-700" data-testid="submit-lead-btn">
+                      Add Lead
+                    </Button>
+                  </div>
                 </form>
               </DialogContent>
             </Dialog>
