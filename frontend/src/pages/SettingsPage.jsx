@@ -219,6 +219,102 @@ const SettingsPage = () => {
     }
   };
 
+  // Invitation handlers
+  const handleGenerateInviteLink = async () => {
+    setGeneratingLink(true);
+    try {
+      const response = await axios.post(`${API}/organizations/invites/link?role=${inviteRole}`, {}, {
+        headers,
+        withCredentials: true
+      });
+      setInviteLink(response.data);
+      toast.success('Invite link generated!');
+      fetchPendingInvites();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to generate invite link');
+    } finally {
+      setGeneratingLink(false);
+    }
+  };
+
+  const handleSendEmailInvites = async () => {
+    const emails = inviteEmails.split(/[,\n]/).map(e => e.trim()).filter(e => e && e.includes('@'));
+    if (emails.length === 0) {
+      toast.error('Please enter valid email addresses');
+      return;
+    }
+
+    setSendingInvites(true);
+    try {
+      const response = await axios.post(`${API}/organizations/invites/email`, {
+        emails,
+        role: inviteRole
+      }, {
+        headers,
+        withCredentials: true
+      });
+      
+      const { total_sent, total_failed } = response.data;
+      if (total_sent > 0) {
+        toast.success(`${total_sent} invitation${total_sent > 1 ? 's' : ''} sent`);
+      }
+      if (total_failed > 0) {
+        toast.warning(`${total_failed} invitation${total_failed > 1 ? 's' : ''} could not be sent`);
+      }
+      setInviteEmails('');
+      fetchPendingInvites();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to send invitations');
+    } finally {
+      setSendingInvites(false);
+    }
+  };
+
+  const handleCSVUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await axios.post(`${API}/organizations/invites/csv?role=${inviteRole}`, formData, {
+        headers: {
+          ...headers,
+          'Content-Type': 'multipart/form-data'
+        },
+        withCredentials: true
+      });
+      
+      const { total_sent, total_failed } = response.data;
+      toast.success(`Processed ${total_sent + total_failed} emails. ${total_sent} invitations sent.`);
+      fetchPendingInvites();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to process CSV');
+    }
+    
+    // Reset file input
+    e.target.value = '';
+  };
+
+  const handleRevokeInvite = async (inviteId) => {
+    try {
+      await axios.delete(`${API}/organizations/invites/${inviteId}`, {
+        headers,
+        withCredentials: true
+      });
+      toast.success('Invitation revoked');
+      fetchPendingInvites();
+    } catch (error) {
+      toast.error('Failed to revoke invitation');
+    }
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    toast.success('Copied to clipboard!');
+  };
+
   const handleUnenrollAffiliate = async () => {
     if (!confirm('Are you sure you want to leave the affiliate program?')) return;
     try {
