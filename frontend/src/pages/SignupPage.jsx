@@ -210,21 +210,24 @@ const SignupPage = () => {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="organization" className="text-slate-700">Organization Name <span className="text-slate-400">(optional)</span></Label>
-                <div className="relative">
-                  <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                  <Input
-                    id="organization"
-                    type="text"
-                    placeholder="Your Company"
-                    className="pl-10 h-12"
-                    value={formData.organization_name}
-                    onChange={(e) => setFormData({ ...formData, organization_name: e.target.value })}
-                    data-testid="organization-input"
-                  />
+              {/* Only show organization name if not joining via invite */}
+              {!inviteInfo && (
+                <div className="space-y-2">
+                  <Label htmlFor="organization" className="text-slate-700">Organization Name <span className="text-slate-400">(optional)</span></Label>
+                  <div className="relative">
+                    <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                    <Input
+                      id="organization"
+                      type="text"
+                      placeholder="Your Company"
+                      className="pl-10 h-12"
+                      value={formData.organization_name}
+                      onChange={(e) => setFormData({ ...formData, organization_name: e.target.value })}
+                      data-testid="organization-input"
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
               <Button
                 type="submit"
@@ -235,7 +238,7 @@ const SignupPage = () => {
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
-                  'Create Account'
+                  inviteInfo ? `Join ${inviteInfo.organization_name}` : 'Create Account'
                 )}
               </Button>
             </form>
