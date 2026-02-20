@@ -241,7 +241,7 @@ const LandingPage = () => {
                 </Button>
               </div>
 
-              <div className="flex items-center gap-6 pt-4">
+              <div className="flex items-center gap-6 pt-2">
                 <div className="flex -space-x-3">
                   <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=faces" alt="User" className="w-10 h-10 rounded-full border-2 border-white object-cover" />
                   <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=faces" alt="User" className="w-10 h-10 rounded-full border-2 border-white object-cover" />
