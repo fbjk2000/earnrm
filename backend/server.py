@@ -1007,8 +1007,9 @@ async def generate_invite_link(
     }
     await db.invites.insert_one(invite_doc)
     
-    # Get the app URL from environment or use a default
-    app_url = os.environ.get('APP_URL', 'https://earnrm.com')
+    # Get the app URL - prefer frontend URL for invite links
+    frontend_url = os.environ.get('FRONTEND_URL', '')
+    app_url = frontend_url or os.environ.get('APP_URL', 'https://earnrm.com')
     invite_link = f"{app_url}/signup?invite={invite_code}"
     
     return {
