@@ -545,7 +545,6 @@ const LandingPage = () => {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             {/* Company Info */}
             <div className="md:col-span-2">
-              <div className="flex items-center space-x-2 mb-4">
               <img 
                 src="https://customer-assets.emergentagent.com/job_leadhub-app-2/artifacts/u9efkh3m_earnrm_logo_horizontal_light_notag_purpleword.png" 
                 alt="earnrm" 
