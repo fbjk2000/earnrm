@@ -205,14 +205,14 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
-              <div className="inline-flex items-center px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-sm font-medium">
+              <div className="inline-flex items-center px-3 py-1 rounded-full bg-purple-50 text-earnrm-purple text-sm font-medium">
                 <Zap className="w-4 h-4 mr-2" />
                 AI-Powered CRM for Modern Teams
               </div>
               
-              <h1 className="text-5xl lg:text-6xl font-bold text-slate-900 tracking-tight leading-tight" data-testid="hero-title">
-                Sales & Marketing,
-                <span className="text-indigo-600"> Simplified</span>
+              <h1 className="text-5xl lg:text-6xl font-bold text-earnrm-black tracking-tight leading-tight" data-testid="hero-title">
+                Your CRM that
+                <span className="text-earnrm-purple"> p<span className="font-black">AI</span>s</span> you back
               </h1>
               
               <p className="text-lg text-slate-600 max-w-lg leading-relaxed" data-testid="hero-description">
@@ -222,7 +222,7 @@ const LandingPage = () => {
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/signup">
-                  <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 h-12 px-8" data-testid="hero-cta-primary">
+                  <Button size="lg" className="bg-earnrm-purple hover:bg-purple-700 h-12 px-8" data-testid="hero-cta-primary">
                     Start Free Trial
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
@@ -230,7 +230,7 @@ const LandingPage = () => {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="h-12 px-8"
+                  className="h-12 px-8 border-earnrm-purple text-earnrm-purple hover:bg-purple-50"
                   onClick={() => setShowLeadMagnet(true)}
                   data-testid="hero-cta-guide"
                 >
@@ -260,7 +260,7 @@ const LandingPage = () => {
               <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-200">
                 <img
                   src="https://customer-assets.emergentagent.com/job_ec98bdb3-0edd-4c4d-a872-3506f378be5d/artifacts/dxg4md11_Goddess%20of%20Europe.png"
-                  alt="upmuch - European Business Excellence"
+                  alt="earnrm - European Business Excellence"
                   className="w-full"
                   data-testid="hero-image"
                 />
@@ -270,8 +270,8 @@ const LandingPage = () => {
               {/* Floating card */}
               <div className="absolute -bottom-6 -left-6 bg-white rounded-xl shadow-lg p-4 border border-slate-100 animate-fade-in">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
-                    <Check className="w-5 h-5 text-emerald-600" />
+                  <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                    <Check className="w-5 h-5 text-earnrm-purple" />
                   </div>
                   <div>
                     <p className="font-semibold text-slate-900">New Lead Scored</p>
@@ -285,7 +285,7 @@ const LandingPage = () => {
       </section>
 
       {/* Lead Magnet Banner */}
-      <section className="py-12 px-6 bg-gradient-to-r from-indigo-600 to-purple-600">
+      <section className="py-12 px-6 bg-gradient-to-r from-earnrm-purple to-purple-700">
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
             <BookOpen className="w-8 h-8 text-white" />
@@ -293,13 +293,13 @@ const LandingPage = () => {
               Free LinkedIn Lead Generation Playbook
             </h2>
           </div>
-          <p className="text-indigo-100 mb-6 max-w-2xl mx-auto">
+          <p className="text-purple-100 mb-6 max-w-2xl mx-auto">
             Learn the exact strategies our top users use to generate 10x more qualified leads from LinkedIn. 
             Includes templates, scripts, and automation tips.
           </p>
           <Button
             size="lg"
-            className="bg-white text-indigo-600 hover:bg-indigo-50 h-12 px-8"
+            className="bg-white text-earnrm-purple hover:bg-purple-50 h-12 px-8"
             onClick={() => setShowLeadMagnet(true)}
             data-testid="lead-magnet-banner-btn"
           >
