@@ -338,11 +338,16 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-24 px-6 bg-slate-50">
-        <div className="max-w-7xl mx-auto">
+      {/* Features Section - Apple-inspired */}
+      <section id="features" className="py-24 px-6 bg-gradient-to-b from-slate-50 to-white relative overflow-hidden">
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-purple-100/30 rounded-full blur-3xl" />
+        <div className="max-w-7xl mx-auto relative">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4" data-testid="features-title">
+            <div className="inline-flex items-center gap-2 mb-4 bg-purple-100 px-4 py-1.5 rounded-full">
+              <Zap className="w-4 h-4 text-[#A100FF]" />
+              <span className="text-sm font-medium text-[#A100FF]">Powerful Features</span>
+            </div>
+            <h2 className="text-3xl lg:text-5xl font-bold text-slate-900 mb-4" data-testid="features-title">
               Everything you need to grow
             </h2>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">
@@ -351,19 +356,19 @@ const LandingPage = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, index) => (
               <Card
                 key={index}
-                className="bg-white border-slate-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                className="bg-white/70 backdrop-blur-sm border-slate-100 hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 hover:-translate-y-1 rounded-2xl overflow-hidden group"
                 data-testid={`feature-card-${index}`}
               >
-                <CardContent className="p-6">
-                  <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-[#A100FF] mb-4">
+                <CardContent className="p-8">
+                  <div className="w-14 h-14 bg-gradient-to-br from-[#A100FF] to-purple-600 rounded-2xl flex items-center justify-center text-white mb-5 shadow-lg shadow-purple-500/20 group-hover:scale-110 transition-transform">
                     {feature.icon}
                   </div>
-                  <h3 className="text-xl font-semibold text-slate-900 mb-2">{feature.title}</h3>
-                  <p className="text-slate-600">{feature.description}</p>
+                  <h3 className="text-xl font-semibold text-slate-900 mb-3">{feature.title}</h3>
+                  <p className="text-slate-600 leading-relaxed">{feature.description}</p>
                 </CardContent>
               </Card>
             ))}
@@ -372,11 +377,15 @@ const LandingPage = () => {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-24 px-6">
+      <section id="pricing" className="py-24 px-6 relative">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4" data-testid="pricing-title">
-              Simple, transparent pricing
+            <div className="inline-flex items-center gap-2 mb-4 bg-emerald-100 px-4 py-1.5 rounded-full">
+              <Check className="w-4 h-4 text-emerald-600" />
+              <span className="text-sm font-medium text-emerald-600">Simple Pricing</span>
+            </div>
+            <h2 className="text-3xl lg:text-5xl font-bold text-slate-900 mb-4" data-testid="pricing-title">
+              Start free, scale when ready
             </h2>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">
               Start free with your team. Scale when you're ready.
