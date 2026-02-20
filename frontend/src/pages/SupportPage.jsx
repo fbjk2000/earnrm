@@ -264,7 +264,7 @@ const SupportPage = () => {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-earnrm-purple rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-[#A100FF] rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">U</span>
               </div>
               <span className="text-xl font-semibold text-slate-900">earnrm</span>
@@ -277,7 +277,7 @@ const SupportPage = () => {
                 </Button>
               </Link>
               <Link to="/login">
-                <Button className="bg-earnrm-purple hover:bg-purple-700" size="sm">
+                <Button className="bg-[#A100FF] hover:bg-purple-700" size="sm">
                   Sign In
                 </Button>
               </Link>
@@ -326,7 +326,7 @@ const SupportPage = () => {
               <h2 className="text-2xl font-bold text-slate-900 mb-6">Frequently Asked Questions</h2>
               {faqs.map((category, idx) => (
                 <div key={idx} className="mb-8">
-                  <h3 className="text-lg font-semibold text-earnrm-purple mb-4">{category.category}</h3>
+                  <h3 className="text-lg font-semibold text-[#A100FF] mb-4">{category.category}</h3>
                   <Accordion type="single" collapsible className="space-y-2">
                     {category.questions.map((item, qIdx) => (
                       <AccordionItem key={qIdx} value={`${idx}-${qIdx}`} className="bg-white rounded-lg border border-slate-200">
@@ -354,7 +354,7 @@ const SupportPage = () => {
                   {trainingModules.map((module, idx) => (
                     <Card key={idx} className="hover:shadow-lg transition-shadow" data-testid={`training-module-${idx}`}>
                       <CardHeader>
-                        <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-earnrm-purple mb-3">
+                        <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-[#A100FF] mb-3">
                           {module.icon}
                         </div>
                         <CardTitle className="text-lg">{module.title}</CardTitle>
@@ -364,7 +364,7 @@ const SupportPage = () => {
                         <ul className="space-y-2">
                           {module.steps.map((step, sIdx) => (
                             <li key={sIdx} className="flex items-start gap-2 text-sm text-slate-600">
-                              <span className="w-5 h-5 rounded-full bg-purple-100 text-earnrm-purple flex items-center justify-center flex-shrink-0 text-xs font-medium">
+                              <span className="w-5 h-5 rounded-full bg-purple-100 text-[#A100FF] flex items-center justify-center flex-shrink-0 text-xs font-medium">
                                 {sIdx + 1}
                               </span>
                               {step}
@@ -380,7 +380,7 @@ const SupportPage = () => {
               {/* Sales Methodologies */}
               <div>
                 <div className="flex items-center gap-3 mb-6">
-                  <TrendingUp className="w-8 h-8 text-earnrm-purple" />
+                  <TrendingUp className="w-8 h-8 text-[#A100FF]" />
                   <h2 className="text-2xl font-bold text-slate-900">Sales Methodologies</h2>
                 </div>
                 <p className="text-slate-600 mb-6 max-w-3xl">
@@ -393,7 +393,7 @@ const SupportPage = () => {
                       <CardHeader>
                         <div className="flex items-center justify-between">
                           <CardTitle className="text-lg flex items-center gap-2">
-                            <Award className="w-5 h-5 text-earnrm-purple" />
+                            <Award className="w-5 h-5 text-[#A100FF]" />
                             {method.name}
                           </CardTitle>
                         </div>
@@ -433,7 +433,7 @@ const SupportPage = () => {
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <Mail className="w-5 h-5 text-earnrm-purple" />
+                      <Mail className="w-5 h-5 text-[#A100FF]" />
                       Send Us a Message
                     </CardTitle>
                     <CardDescription>
@@ -482,7 +482,7 @@ const SupportPage = () => {
                       </div>
                       <Button
                         type="submit"
-                        className="w-full bg-earnrm-purple hover:bg-purple-700"
+                        className="w-full bg-[#A100FF] hover:bg-purple-700"
                         disabled={sending}
                         data-testid="contact-submit"
                       >
@@ -506,16 +506,16 @@ const SupportPage = () => {
                       <h3 className="font-semibold text-slate-900 mb-4">Contact Information</h3>
                       <div className="space-y-4">
                         <div className="flex items-start gap-3">
-                          <Mail className="w-5 h-5 text-earnrm-purple mt-0.5" />
+                          <Mail className="w-5 h-5 text-[#A100FF] mt-0.5" />
                           <div>
                             <p className="font-medium text-slate-900">Email</p>
-                            <a href="mailto:support@earnrm.com" className="text-earnrm-purple hover:text-purple-700">
+                            <a href="mailto:support@earnrm.com" className="text-[#A100FF] hover:text-purple-700">
                               support@earnrm.com
                             </a>
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
-                          <MapPin className="w-5 h-5 text-earnrm-purple mt-0.5" />
+                          <MapPin className="w-5 h-5 text-[#A100FF] mt-0.5" />
                           <div>
                             <p className="font-medium text-slate-900">Address</p>
                             <p className="text-slate-600 text-sm">
@@ -528,7 +528,7 @@ const SupportPage = () => {
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
-                          <Clock className="w-5 h-5 text-earnrm-purple mt-0.5" />
+                          <Clock className="w-5 h-5 text-[#A100FF] mt-0.5" />
                           <div>
                             <p className="font-medium text-slate-900">Business Hours</p>
                             <p className="text-slate-600 text-sm">
@@ -567,7 +567,7 @@ const SupportPage = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Building className="w-5 h-5 text-earnrm-purple" />
+                    <Building className="w-5 h-5 text-[#A100FF]" />
                     Company Information
                   </CardTitle>
                 </CardHeader>
@@ -597,7 +597,7 @@ const SupportPage = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-earnrm-purple" />
+                    <FileText className="w-5 h-5 text-[#A100FF]" />
                     Terms of Service
                   </CardTitle>
                 </CardHeader>
@@ -640,7 +640,7 @@ const SupportPage = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Shield className="w-5 h-5 text-earnrm-purple" />
+                    <Shield className="w-5 h-5 text-[#A100FF]" />
                     Privacy Policy
                   </CardTitle>
                 </CardHeader>

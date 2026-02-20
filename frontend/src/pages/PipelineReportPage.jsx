@@ -78,7 +78,7 @@ const PipelineReportPage = () => {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center py-12">
-          <div className="w-8 h-8 border-2 border-earnrm-purple border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[#A100FF] border-t-transparent rounded-full animate-spin" />
         </div>
       </DashboardLayout>
     );
@@ -108,7 +108,7 @@ const PipelineReportPage = () => {
               </Badge>
             )}
             {pipelineData?.is_admin_view && (
-              <Badge className="bg-earnrm-purple">
+              <Badge className="bg-[#A100FF]">
                 <Users className="w-3 h-3 mr-1" />
                 Admin View
               </Badge>
@@ -126,7 +126,7 @@ const PipelineReportPage = () => {
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                  <Euro className="w-6 h-6 text-earnrm-purple" />
+                  <Euro className="w-6 h-6 text-[#A100FF]" />
                 </div>
                 <div>
                   <p className="text-sm text-slate-500">Total Pipeline Value</p>

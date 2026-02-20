@@ -319,7 +319,7 @@ const SettingsPage = () => {
                     />
                   ) : (
                     <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center">
-                      <span className="text-2xl font-semibold text-earnrm-purple">
+                      <span className="text-2xl font-semibold text-[#A100FF]">
                         {user?.name?.[0]?.toUpperCase() || 'U'}
                       </span>
                     </div>
@@ -424,7 +424,7 @@ const SettingsPage = () => {
                     <div className="text-center py-6">
                       <Gift className="w-12 h-12 mx-auto text-indigo-400 mb-3" />
                       <p className="text-slate-600 mb-4">Join our affiliate program and earn 20% commission on referrals!</p>
-                      <Button onClick={handleEnrollAffiliate} className="bg-earnrm-purple hover:bg-purple-700">
+                      <Button onClick={handleEnrollAffiliate} className="bg-[#A100FF] hover:bg-purple-700">
                         <Link className="w-4 h-4 mr-2" />
                         Become an Affiliate
                       </Button>
@@ -448,7 +448,7 @@ const SettingsPage = () => {
               <CardContent>
                 {loading ? (
                   <div className="flex items-center justify-center py-8">
-                    <div className="w-6 h-6 border-2 border-earnrm-purple border-t-transparent rounded-full animate-spin" />
+                    <div className="w-6 h-6 border-2 border-[#A100FF] border-t-transparent rounded-full animate-spin" />
                   </div>
                 ) : organization ? (
                   <div className="space-y-4">
@@ -472,7 +472,7 @@ const SettingsPage = () => {
                           Upgrade to Pro to add unlimited team members and unlock all features.
                         </p>
                         <Button 
-                          className="bg-earnrm-purple hover:bg-purple-700" 
+                          className="bg-[#A100FF] hover:bg-purple-700" 
                           size="sm"
                           onClick={() => navigate('/pricing')}
                         >
@@ -498,7 +498,7 @@ const SettingsPage = () => {
                       <Button
                         type="submit"
                         disabled={creatingOrg || !newOrgName.trim()}
-                        className="bg-earnrm-purple hover:bg-purple-700"
+                        className="bg-[#A100FF] hover:bg-purple-700"
                         data-testid="create-org-btn"
                       >
                         {creatingOrg ? (
@@ -535,7 +535,7 @@ const SettingsPage = () => {
                             <img src={member.picture} alt={member.name} className="w-10 h-10 rounded-full" />
                           ) : (
                             <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                              <span className="font-semibold text-earnrm-purple">{member.name?.[0]?.toUpperCase()}</span>
+                              <span className="font-semibold text-[#A100FF]">{member.name?.[0]?.toUpperCase()}</span>
                             </div>
                           )}
                           <div>
@@ -597,7 +597,7 @@ const SettingsPage = () => {
                       <Button variant="outline" size="sm" onClick={() => { setEditingStages(false); setDealStages(orgSettings?.deal_stages || []); }}>
                         Cancel
                       </Button>
-                      <Button size="sm" className="bg-earnrm-purple hover:bg-purple-700" onClick={handleSaveDealStages}>
+                      <Button size="sm" className="bg-[#A100FF] hover:bg-purple-700" onClick={handleSaveDealStages}>
                         <Save className="w-4 h-4 mr-2" />
                         Save
                       </Button>
@@ -698,7 +698,7 @@ const SettingsPage = () => {
                         <p className="text-sm text-slate-500">Up to 3 users included</p>
                       </div>
                       <Button 
-                        className="bg-earnrm-purple hover:bg-purple-700"
+                        className="bg-[#A100FF] hover:bg-purple-700"
                         onClick={() => navigate('/pricing')}
                       >
                         Upgrade

@@ -198,7 +198,7 @@ const LeadsPage = () => {
 
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-earnrm-purple hover:bg-purple-700" data-testid="add-lead-btn">
+                <Button className="bg-[#A100FF] hover:bg-purple-700" data-testid="add-lead-btn">
                   <Plus className="w-4 h-4 mr-2" />
                   Add Lead
                 </Button>
@@ -270,7 +270,7 @@ const LeadsPage = () => {
                       data-testid="lead-linkedin"
                     />
                   </div>
-                  <Button type="submit" className="w-full bg-earnrm-purple hover:bg-purple-700" data-testid="submit-lead-btn">
+                  <Button type="submit" className="w-full bg-[#A100FF] hover:bg-purple-700" data-testid="submit-lead-btn">
                     Add Lead
                   </Button>
                 </form>
@@ -316,7 +316,7 @@ const LeadsPage = () => {
           <CardContent className="p-0">
             {loading ? (
               <div className="p-8 text-center">
-                <div className="w-8 h-8 border-2 border-earnrm-purple border-t-transparent rounded-full animate-spin mx-auto" />
+                <div className="w-8 h-8 border-2 border-[#A100FF] border-t-transparent rounded-full animate-spin mx-auto" />
               </div>
             ) : filteredLeads.length === 0 ? (
               <div className="p-8 text-center">
@@ -333,7 +333,7 @@ const LeadsPage = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                          <span className="text-earnrm-purple font-medium">
+                          <span className="text-[#A100FF] font-medium">
                             {lead.first_name?.[0]}{lead.last_name?.[0]}
                           </span>
                         </div>

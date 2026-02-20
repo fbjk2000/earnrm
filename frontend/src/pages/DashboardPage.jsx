@@ -72,7 +72,7 @@ const DashboardPage = () => {
       title: 'Total Leads',
       value: stats?.total_leads || 0,
       icon: <Users className="w-5 h-5" />,
-      color: 'bg-purple-100 text-earnrm-purple',
+      color: 'bg-purple-100 text-[#A100FF]',
       link: '/leads'
     },
     {
@@ -117,7 +117,7 @@ const DashboardPage = () => {
               </Button>
             </Link>
             <Link to="/deals">
-              <Button className="bg-earnrm-purple hover:bg-purple-700" data-testid="create-deal-btn">
+              <Button className="bg-[#A100FF] hover:bg-purple-700" data-testid="create-deal-btn">
                 <Plus className="w-4 h-4 mr-2" />
                 Create Deal
               </Button>
@@ -177,7 +177,7 @@ const DashboardPage = () => {
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                          <span className="text-earnrm-purple font-medium">
+                          <span className="text-[#A100FF] font-medium">
                             {lead.first_name?.[0]}{lead.last_name?.[0]}
                           </span>
                         </div>
@@ -275,7 +275,7 @@ const DashboardPage = () => {
             <CardContent className="p-6">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center">
-                  <Zap className="w-6 h-6 text-earnrm-purple" />
+                  <Zap className="w-6 h-6 text-[#A100FF]" />
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-slate-900">Complete your setup</h3>
@@ -284,7 +284,7 @@ const DashboardPage = () => {
                   </p>
                 </div>
                 <Link to="/settings">
-                  <Button className="bg-earnrm-purple hover:bg-purple-700" data-testid="setup-org-btn">
+                  <Button className="bg-[#A100FF] hover:bg-purple-700" data-testid="setup-org-btn">
                     Set Up Organization
                   </Button>
                 </Link>

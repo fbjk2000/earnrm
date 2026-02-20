@@ -164,7 +164,7 @@ const TasksPage = () => {
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-earnrm-purple hover:bg-purple-700" data-testid="add-task-btn">
+              <Button className="bg-[#A100FF] hover:bg-purple-700" data-testid="add-task-btn">
                 <Plus className="w-4 h-4 mr-2" />
                 New Task
               </Button>
@@ -247,7 +247,7 @@ const TasksPage = () => {
                   </Select>
                 </div>
                 
-                <Button type="submit" className="w-full bg-earnrm-purple hover:bg-purple-700" data-testid="submit-task-btn">
+                <Button type="submit" className="w-full bg-[#A100FF] hover:bg-purple-700" data-testid="submit-task-btn">
                   Create Task
                 </Button>
               </form>
@@ -299,7 +299,7 @@ const TasksPage = () => {
         {/* Kanban Board */}
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="w-8 h-8 border-2 border-earnrm-purple border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#A100FF] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
           <div className="grid md:grid-cols-3 gap-6">
@@ -336,7 +336,7 @@ const TasksPage = () => {
                               
                               {/* Owner display */}
                               {task.assigned_to && (
-                                <div className="flex items-center gap-1 mt-2 text-xs text-earnrm-purple">
+                                <div className="flex items-center gap-1 mt-2 text-xs text-[#A100FF]">
                                   <User className="w-3 h-3" />
                                   {getOwnerName(task.assigned_to)}
                                 </div>

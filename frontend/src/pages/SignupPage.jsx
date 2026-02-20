@@ -176,7 +176,7 @@ const SignupPage = () => {
 
               <Button
                 type="submit"
-                className="w-full h-12 bg-earnrm-purple hover:bg-purple-700"
+                className="w-full h-12 bg-[#A100FF] hover:bg-purple-700"
                 disabled={loading}
                 data-testid="signup-submit-btn"
               >
@@ -194,7 +194,7 @@ const SignupPage = () => {
 
             <p className="text-center text-sm text-slate-600">
               Already have an account?{' '}
-              <Link to="/login" className="text-earnrm-purple hover:text-purple-700 font-medium" data-testid="login-link">
+              <Link to="/login" className="text-[#A100FF] hover:text-purple-700 font-medium" data-testid="login-link">
                 Sign in
               </Link>
             </p>

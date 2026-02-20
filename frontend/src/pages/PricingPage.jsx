@@ -174,17 +174,17 @@ const PricingPage = () => {
                     key={key}
                     className={`flex items-center justify-between p-4 border-2 rounded-xl cursor-pointer transition-all ${
                       selectedPlan === key
-                        ? 'border-earnrm-purple bg-purple-50'
+                        ? 'border-[#A100FF] bg-purple-50'
                         : 'border-slate-200 hover:border-slate-300'
                     }`}
                     data-testid={`plan-${key}`}
                   >
                     <div className="flex items-center gap-4">
                       <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                        selectedPlan === key ? 'border-earnrm-purple' : 'border-slate-300'
+                        selectedPlan === key ? 'border-[#A100FF]' : 'border-slate-300'
                       }`}>
                         {selectedPlan === key && (
-                          <div className="w-3 h-3 rounded-full bg-earnrm-purple" />
+                          <div className="w-3 h-3 rounded-full bg-[#A100FF]" />
                         )}
                       </div>
                       <div>
@@ -374,7 +374,7 @@ const PricingPage = () => {
                   <div className="border-t pt-3">
                     <div className="flex justify-between text-lg">
                       <span className="font-semibold">Total</span>
-                      <span className="font-bold text-earnrm-purple" data-testid="total-price">
+                      <span className="font-bold text-[#A100FF]" data-testid="total-price">
                         {useCrypto ? '$' : '€'}{pricing.totalAmount.toFixed(2)}
                         <span className="text-xs font-normal text-slate-500 block text-right">
                           /{selectedPlan === 'annual' ? 'year' : 'month'}
@@ -385,7 +385,7 @@ const PricingPage = () => {
                 </div>
 
                 <Button
-                  className="w-full h-12 bg-earnrm-purple hover:bg-purple-700"
+                  className="w-full h-12 bg-[#A100FF] hover:bg-purple-700"
                   onClick={handleCheckout}
                   disabled={loading}
                   data-testid="checkout-btn"

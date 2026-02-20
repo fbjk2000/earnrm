@@ -211,7 +211,7 @@ const DealsPage = () => {
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-earnrm-purple hover:bg-purple-700" data-testid="add-deal-btn">
+              <Button className="bg-[#A100FF] hover:bg-purple-700" data-testid="add-deal-btn">
                 <Plus className="w-4 h-4 mr-2" />
                 New Deal
               </Button>
@@ -420,7 +420,7 @@ const DealsPage = () => {
                   </div>
                 </div>
                 
-                <Button type="submit" className="w-full bg-earnrm-purple hover:bg-purple-700" data-testid="submit-deal-btn">
+                <Button type="submit" className="w-full bg-[#A100FF] hover:bg-purple-700" data-testid="submit-deal-btn">
                   Create Deal with Task
                 </Button>
               </form>
@@ -484,7 +484,7 @@ const DealsPage = () => {
         {/* Pipeline Board */}
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="w-8 h-8 border-2 border-earnrm-purple border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#A100FF] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
           <div className="overflow-x-auto pb-4">
@@ -519,7 +519,7 @@ const DealsPage = () => {
                             <div className="flex items-start justify-between">
                               <div className="flex-1 min-w-0">
                                 <p className="font-medium text-slate-900 text-sm truncate">{deal.name}</p>
-                                <p className="text-lg font-bold text-earnrm-purple mt-1">
+                                <p className="text-lg font-bold text-[#A100FF] mt-1">
                                   €{(deal.value || 0).toLocaleString()}
                                 </p>
                                 

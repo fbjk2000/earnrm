@@ -138,13 +138,13 @@ const LandingPage = () => {
 
             {/* Desktop Nav */}
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-slate-600 hover:text-earnrm-purple transition-colors" data-testid="nav-features">Features</a>
-              <a href="#pricing" className="text-slate-600 hover:text-earnrm-purple transition-colors" data-testid="nav-pricing">Pricing</a>
-              <a href="#testimonials" className="text-slate-600 hover:text-earnrm-purple transition-colors" data-testid="nav-testimonials">Testimonials</a>
-              <Link to="/support" className="text-slate-600 hover:text-earnrm-purple transition-colors" data-testid="nav-support">Support</Link>
+              <a href="#features" className="text-slate-600 hover:text-[#A100FF] transition-colors" data-testid="nav-features">Features</a>
+              <a href="#pricing" className="text-slate-600 hover:text-[#A100FF] transition-colors" data-testid="nav-pricing">Pricing</a>
+              <a href="#testimonials" className="text-slate-600 hover:text-[#A100FF] transition-colors" data-testid="nav-testimonials">Testimonials</a>
+              <Link to="/support" className="text-slate-600 hover:text-[#A100FF] transition-colors" data-testid="nav-support">Support</Link>
               <button
                 onClick={() => setShowLeadMagnet(true)}
-                className="text-earnrm-purple hover:text-purple-700 font-medium transition-colors flex items-center gap-1"
+                className="text-[#A100FF] hover:text-purple-700 font-medium transition-colors flex items-center gap-1"
                 data-testid="nav-free-guide"
               >
                 <Gift className="w-4 h-4" />
@@ -157,7 +157,7 @@ const LandingPage = () => {
                 <Button variant="ghost" data-testid="login-btn">Log in</Button>
               </Link>
               <Link to="/signup">
-                <Button className="bg-earnrm-purple hover:bg-purple-700" data-testid="get-started-btn">
+                <Button className="bg-[#A100FF] hover:bg-purple-700" data-testid="get-started-btn">
                   Get Started Free
                 </Button>
               </Link>
@@ -178,13 +178,13 @@ const LandingPage = () => {
         {mobileMenuOpen && (
           <div className="md:hidden bg-white border-t border-slate-200 py-4 px-6">
             <div className="flex flex-col space-y-4">
-              <a href="#features" className="text-slate-600 hover:text-earnrm-purple">Features</a>
-              <a href="#pricing" className="text-slate-600 hover:text-earnrm-purple">Pricing</a>
-              <a href="#testimonials" className="text-slate-600 hover:text-earnrm-purple">Testimonials</a>
-              <Link to="/support" className="text-slate-600 hover:text-earnrm-purple">Support</Link>
+              <a href="#features" className="text-slate-600 hover:text-[#A100FF]">Features</a>
+              <a href="#pricing" className="text-slate-600 hover:text-[#A100FF]">Pricing</a>
+              <a href="#testimonials" className="text-slate-600 hover:text-[#A100FF]">Testimonials</a>
+              <Link to="/support" className="text-slate-600 hover:text-[#A100FF]">Support</Link>
               <button
                 onClick={() => { setShowLeadMagnet(true); setMobileMenuOpen(false); }}
-                className="text-earnrm-purple font-medium text-left flex items-center gap-2"
+                className="text-[#A100FF] font-medium text-left flex items-center gap-2"
               >
                 <Gift className="w-4 h-4" />
                 Free LinkedIn Guide
@@ -193,7 +193,7 @@ const LandingPage = () => {
                 <Button variant="ghost" className="w-full justify-start">Log in</Button>
               </Link>
               <Link to="/signup">
-                <Button className="w-full bg-earnrm-purple hover:bg-purple-700">Get Started Free</Button>
+                <Button className="w-full bg-[#A100FF] hover:bg-purple-700">Get Started Free</Button>
               </Link>
             </div>
           </div>
@@ -205,14 +205,14 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
-              <div className="inline-flex items-center px-3 py-1 rounded-full bg-purple-50 text-earnrm-purple text-sm font-medium">
+              <div className="inline-flex items-center px-3 py-1 rounded-full bg-purple-50 text-[#A100FF] text-sm font-medium">
                 <Zap className="w-4 h-4 mr-2" />
                 AI-Powered CRM for Modern Teams
               </div>
               
               <h1 className="text-5xl lg:text-6xl font-bold text-earnrm-black tracking-tight leading-tight" data-testid="hero-title">
                 Your CRM that
-                <span className="text-earnrm-purple"> p<span className="font-black">AI</span>s</span> you back
+                <span className="text-[#A100FF]"> p<span className="font-black">AI</span>s</span> you back
               </h1>
               
               <p className="text-lg text-slate-600 max-w-lg leading-relaxed" data-testid="hero-description">
@@ -222,7 +222,7 @@ const LandingPage = () => {
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/signup">
-                  <Button size="lg" className="bg-earnrm-purple hover:bg-purple-700 h-12 px-8" data-testid="hero-cta-primary">
+                  <Button size="lg" className="bg-[#A100FF] hover:bg-purple-700 h-12 px-8" data-testid="hero-cta-primary">
                     Start Free Trial
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
@@ -230,7 +230,7 @@ const LandingPage = () => {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="h-12 px-8 border-earnrm-purple text-earnrm-purple hover:bg-purple-50"
+                  className="h-12 px-8 border-[#A100FF] text-[#A100FF] hover:bg-purple-50"
                   onClick={() => setShowLeadMagnet(true)}
                   data-testid="hero-cta-guide"
                 >
@@ -271,7 +271,7 @@ const LandingPage = () => {
               <div className="absolute -bottom-6 -left-6 bg-white rounded-xl shadow-lg p-4 border border-slate-100 animate-fade-in">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                    <Check className="w-5 h-5 text-earnrm-purple" />
+                    <Check className="w-5 h-5 text-[#A100FF]" />
                   </div>
                   <div>
                     <p className="font-semibold text-slate-900">New Lead Scored</p>
@@ -299,7 +299,7 @@ const LandingPage = () => {
           </p>
           <Button
             size="lg"
-            className="bg-white text-earnrm-purple hover:bg-purple-50 h-12 px-8"
+            className="bg-white text-[#A100FF] hover:bg-purple-50 h-12 px-8"
             onClick={() => setShowLeadMagnet(true)}
             data-testid="lead-magnet-banner-btn"
           >
@@ -330,7 +330,7 @@ const LandingPage = () => {
                 data-testid={`feature-card-${index}`}
               >
                 <CardContent className="p-6">
-                  <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-earnrm-purple mb-4">
+                  <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-[#A100FF] mb-4">
                     {feature.icon}
                   </div>
                   <h3 className="text-xl font-semibold text-slate-900 mb-2">{feature.title}</h3>
@@ -366,24 +366,24 @@ const LandingPage = () => {
                 </div>
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-center text-slate-600">
-                    <Check className="w-5 h-5 text-earnrm-purple mr-2" />
+                    <Check className="w-5 h-5 text-[#A100FF] mr-2" />
                     Up to 3 users
                   </li>
                   <li className="flex items-center text-slate-600">
-                    <Check className="w-5 h-5 text-earnrm-purple mr-2" />
+                    <Check className="w-5 h-5 text-[#A100FF] mr-2" />
                     500 leads
                   </li>
                   <li className="flex items-center text-slate-600">
-                    <Check className="w-5 h-5 text-earnrm-purple mr-2" />
+                    <Check className="w-5 h-5 text-[#A100FF] mr-2" />
                     Basic AI scoring
                   </li>
                   <li className="flex items-center text-slate-600">
-                    <Check className="w-5 h-5 text-earnrm-purple mr-2" />
+                    <Check className="w-5 h-5 text-[#A100FF] mr-2" />
                     Email support
                   </li>
                 </ul>
                 <Link to="/signup">
-                  <Button variant="outline" className="w-full border-earnrm-purple text-earnrm-purple hover:bg-purple-50" data-testid="pricing-free-btn">
+                  <Button variant="outline" className="w-full border-[#A100FF] text-[#A100FF] hover:bg-purple-50" data-testid="pricing-free-btn">
                     Get Started
                   </Button>
                 </Link>
@@ -391,9 +391,9 @@ const LandingPage = () => {
             </Card>
 
             {/* Pro Plan - Monthly */}
-            <Card className="border-2 border-earnrm-purple relative" data-testid="pricing-pro">
+            <Card className="border-2 border-[#A100FF] relative" data-testid="pricing-pro">
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="bg-earnrm-purple text-white px-3 py-1 rounded-full text-sm font-medium">
+                <span className="bg-[#A100FF] text-white px-3 py-1 rounded-full text-sm font-medium">
                   Most Popular
                 </span>
               </div>
@@ -406,28 +406,28 @@ const LandingPage = () => {
                 </div>
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-center text-slate-600">
-                    <Check className="w-5 h-5 text-earnrm-purple mr-2" />
+                    <Check className="w-5 h-5 text-[#A100FF] mr-2" />
                     Unlimited users
                   </li>
                   <li className="flex items-center text-slate-600">
-                    <Check className="w-5 h-5 text-earnrm-purple mr-2" />
+                    <Check className="w-5 h-5 text-[#A100FF] mr-2" />
                     Unlimited leads
                   </li>
                   <li className="flex items-center text-slate-600">
-                    <Check className="w-5 h-5 text-earnrm-purple mr-2" />
+                    <Check className="w-5 h-5 text-[#A100FF] mr-2" />
                     Advanced AI features
                   </li>
                   <li className="flex items-center text-slate-600">
-                    <Check className="w-5 h-5 text-earnrm-purple mr-2" />
+                    <Check className="w-5 h-5 text-[#A100FF] mr-2" />
                     LinkedIn integration
                   </li>
                   <li className="flex items-center text-slate-600">
-                    <Check className="w-5 h-5 text-earnrm-purple mr-2" />
+                    <Check className="w-5 h-5 text-[#A100FF] mr-2" />
                     Priority support
                   </li>
                 </ul>
                 <Link to="/signup">
-                  <Button className="w-full bg-earnrm-purple hover:bg-purple-700" data-testid="pricing-pro-btn">
+                  <Button className="w-full bg-[#A100FF] hover:bg-purple-700" data-testid="pricing-pro-btn">
                     Start Free Trial
                   </Button>
                 </Link>
@@ -443,18 +443,18 @@ const LandingPage = () => {
                   <span className="text-4xl font-bold text-slate-900">€12</span>
                   <span className="text-slate-600">/user/month</span>
                 </div>
-                <p className="text-earnrm-purple font-medium mb-6">Save 20% annually</p>
+                <p className="text-[#A100FF] font-medium mb-6">Save 20% annually</p>
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-center text-slate-600">
-                    <Check className="w-5 h-5 text-earnrm-purple mr-2" />
+                    <Check className="w-5 h-5 text-[#A100FF] mr-2" />
                     Everything in Pro
                   </li>
                   <li className="flex items-center text-slate-600">
-                    <Check className="w-5 h-5 text-earnrm-purple mr-2" />
+                    <Check className="w-5 h-5 text-[#A100FF] mr-2" />
                     20% discount
                   </li>
                   <li className="flex items-center text-slate-600">
-                    <Check className="w-5 h-5 text-earnrm-purple mr-2" />
+                    <Check className="w-5 h-5 text-[#A100FF] mr-2" />
                     5% extra for crypto
                   </li>
                   <li className="flex items-center text-slate-600">
@@ -525,7 +525,7 @@ const LandingPage = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/signup">
-              <Button size="lg" className="bg-earnrm-purple hover:bg-purple-700 h-12 px-8" data-testid="cta-signup">
+              <Button size="lg" className="bg-[#A100FF] hover:bg-purple-700 h-12 px-8" data-testid="cta-signup">
                 Start Free Trial
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
@@ -551,7 +551,7 @@ const LandingPage = () => {
                 className="h-8 mb-4 brightness-0 invert"
               />
               <p className="text-slate-400 text-sm mb-4">
-                Your CRM that p<span className="text-earnrm-purple font-bold">AI</span>s you back. Simplify your workflow, grow your business.
+                Your CRM that p<span className="text-[#A100FF] font-bold">AI</span>s you back. Simplify your workflow, grow your business.
               </p>
               <div className="text-sm text-slate-500">
                 <p className="font-medium text-slate-400">Fintery Ltd.</p>
@@ -605,7 +605,7 @@ const LandingPage = () => {
         <DialogContent className="max-w-md" data-testid="lead-magnet-modal">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl">
-              <BookOpen className="w-6 h-6 text-earnrm-purple" />
+              <BookOpen className="w-6 h-6 text-[#A100FF]" />
               Free LinkedIn Lead Generation Playbook
             </DialogTitle>
           </DialogHeader>
@@ -659,7 +659,7 @@ const LandingPage = () => {
 
               <Button
                 type="submit"
-                className="w-full bg-earnrm-purple hover:bg-purple-700 h-12"
+                className="w-full bg-[#A100FF] hover:bg-purple-700 h-12"
                 disabled={submitting}
                 data-testid="lead-magnet-submit"
               >
@@ -680,7 +680,7 @@ const LandingPage = () => {
           ) : (
             <div className="text-center py-6">
               <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Check className="w-8 h-8 text-earnrm-purple" />
+                <Check className="w-8 h-8 text-[#A100FF]" />
               </div>
               <h3 className="text-lg font-semibold text-slate-900 mb-2">You're all set!</h3>
               <p className="text-slate-600 mb-6">
@@ -688,7 +688,7 @@ const LandingPage = () => {
               </p>
               <Button
                 onClick={handleDownload}
-                className="w-full bg-earnrm-purple hover:bg-purple-700 h-12"
+                className="w-full bg-[#A100FF] hover:bg-purple-700 h-12"
                 data-testid="lead-magnet-download"
               >
                 <Download className="w-5 h-5 mr-2" />
