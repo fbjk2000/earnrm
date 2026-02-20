@@ -378,13 +378,25 @@ const LeadsPage = () => {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2 sm:gap-4">
                         {lead.ai_score && (
                           <div className="flex items-center gap-1 px-2 py-1 bg-amber-50 rounded-full">
                             <Zap className="w-4 h-4 text-amber-500" />
                             <span className="text-sm font-medium text-amber-700">{lead.ai_score}</span>
                           </div>
                         )}
+
+                        {/* AI Action Buttons */}
+                        <div className="hidden sm:flex items-center gap-1">
+                          <LeadSummary 
+                            leadId={lead.lead_id} 
+                            leadName={`${lead.first_name} ${lead.last_name}`}
+                          />
+                          <AIEmailComposer 
+                            leadId={lead.lead_id} 
+                            leadName={`${lead.first_name} ${lead.last_name}`}
+                          />
+                        </div>
 
                         <Select
                           value={lead.status}
@@ -409,18 +421,6 @@ const LeadsPage = () => {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem asChild>
-                              <LeadSummary 
-                                leadId={lead.lead_id} 
-                                leadName={`${lead.first_name} ${lead.last_name}`}
-                              />
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                              <AIEmailComposer 
-                                leadId={lead.lead_id} 
-                                leadName={`${lead.first_name} ${lead.last_name}`}
-                              />
-                            </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleScoreLead(lead.lead_id)}>
                               <Zap className="w-4 h-4 mr-2" />
                               AI Score
