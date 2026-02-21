@@ -23,7 +23,15 @@ import {
   Filter,
   Sparkles,
   FileText,
-  MessageSquare
+  MessageSquare,
+  Globe,
+  MapPin,
+  Edit2,
+  Save,
+  X,
+  Wand2,
+  Briefcase,
+  Tag
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -31,6 +39,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '../components/ui/dropdown-menu';
+import { Textarea } from '../components/ui/textarea';
+import { Badge } from '../components/ui/badge';
 import { SmartSearch, AIEmailComposer, LeadSummary } from '../components/AIAssistant';
 
 const LeadsPage = () => {
