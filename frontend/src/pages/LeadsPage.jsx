@@ -543,6 +543,176 @@ const LeadsPage = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Lead Detail / Edit Dialog */}
+      <Dialog open={!!selectedLead} onOpenChange={() => { setSelectedLead(null); setEditMode(false); }}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          {selectedLead && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+                      <span className="text-[#A100FF] font-medium text-sm">{selectedLead.first_name?.[0]}{selectedLead.last_name?.[0]}</span>
+                    </div>
+                    {editMode ? 'Edit Lead' : `${selectedLead.first_name} ${selectedLead.last_name}`}
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    {selectedLead.ai_score && (
+                      <Badge className="bg-amber-100 text-amber-700"><Zap className="w-3 h-3 mr-1" />{selectedLead.ai_score}/100</Badge>
+                    )}
+                    {!editMode && (
+                      <>
+                        <Button size="sm" variant="outline" onClick={() => setEditMode(true)} data-testid="edit-lead-btn">
+                          <Edit2 className="w-3.5 h-3.5 mr-1" /> Edit
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => handleEnrichLead(selectedLead.lead_id)} disabled={enriching} data-testid="enrich-lead-btn">
+                          {enriching ? <div className="w-3.5 h-3.5 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mr-1" /> : <Wand2 className="w-3.5 h-3.5 mr-1" />}
+                          Enrich
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => handleScoreLead(selectedLead.lead_id)} disabled={scoring === selectedLead.lead_id} data-testid="score-lead-btn">
+                          {scoring === selectedLead.lead_id ? <div className="w-3.5 h-3.5 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mr-1" /> : <Zap className="w-3.5 h-3.5 mr-1" />}
+                          Score
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                </DialogTitle>
+              </DialogHeader>
+
+              {editMode ? (
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  {[
+                    { key: 'first_name', label: 'First Name', icon: null },
+                    { key: 'last_name', label: 'Last Name', icon: null },
+                    { key: 'email', label: 'Email', icon: Mail },
+                    { key: 'phone', label: 'Phone', icon: Phone },
+                    { key: 'company', label: 'Company', icon: Building },
+                    { key: 'job_title', label: 'Job Title', icon: Briefcase },
+                    { key: 'linkedin_url', label: 'LinkedIn URL', icon: Linkedin },
+                    { key: 'website', label: 'Website', icon: Globe },
+                    { key: 'location', label: 'Location', icon: MapPin },
+                    { key: 'industry', label: 'Industry', icon: Tag },
+                    { key: 'company_size', label: 'Company Size', icon: Building },
+                    { key: 'source', label: 'Source', icon: null },
+                  ].map(f => (
+                    <div key={f.key}>
+                      <Label className="text-xs text-slate-500 mb-1 block">{f.label}</Label>
+                      <Input
+                        value={editData[f.key] || ''}
+                        onChange={(e) => setEditData(prev => ({ ...prev, [f.key]: e.target.value }))}
+                        data-testid={`edit-${f.key}`}
+                      />
+                    </div>
+                  ))}
+                  <div className="col-span-2">
+                    <Label className="text-xs text-slate-500 mb-1 block">Notes</Label>
+                    <Textarea
+                      value={editData.notes || ''}
+                      onChange={(e) => setEditData(prev => ({ ...prev, notes: e.target.value }))}
+                      rows={2}
+                      data-testid="edit-notes"
+                    />
+                  </div>
+                  <div className="col-span-2 flex gap-2 pt-2">
+                    <Button onClick={handleSaveLead} disabled={saving} className="bg-[#A100FF] hover:bg-purple-700" data-testid="save-lead-btn">
+                      {saving ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                      Save Changes
+                    </Button>
+                    <Button variant="outline" onClick={() => { setEditMode(false); setEditData({ ...selectedLead }); }}>Cancel</Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4 pt-2">
+                  {/* Basic Info */}
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { label: 'Email', value: selectedLead.email, icon: <Mail className="w-3.5 h-3.5 text-slate-400" /> },
+                      { label: 'Phone', value: selectedLead.phone, icon: <Phone className="w-3.5 h-3.5 text-slate-400" /> },
+                      { label: 'Company', value: selectedLead.company, icon: <Building className="w-3.5 h-3.5 text-slate-400" /> },
+                      { label: 'Job Title', value: selectedLead.job_title, icon: <Briefcase className="w-3.5 h-3.5 text-slate-400" /> },
+                      { label: 'Website', value: selectedLead.website, icon: <Globe className="w-3.5 h-3.5 text-slate-400" />, link: true },
+                      { label: 'LinkedIn', value: selectedLead.linkedin_url, icon: <Linkedin className="w-3.5 h-3.5 text-slate-400" />, link: true },
+                      { label: 'Location', value: selectedLead.location, icon: <MapPin className="w-3.5 h-3.5 text-slate-400" /> },
+                      { label: 'Industry', value: selectedLead.industry, icon: <Tag className="w-3.5 h-3.5 text-slate-400" /> },
+                      { label: 'Company Size', value: selectedLead.company_size, icon: <Building className="w-3.5 h-3.5 text-slate-400" /> },
+                      { label: 'Source', value: selectedLead.source, icon: <Filter className="w-3.5 h-3.5 text-slate-400" /> },
+                      { label: 'Status', value: selectedLead.status },
+                      { label: 'AI Score', value: selectedLead.ai_score ? `${selectedLead.ai_score}/100` : 'Not scored' },
+                    ].filter(f => f.value).map(f => (
+                      <div key={f.label} className="bg-slate-50 rounded-lg p-3">
+                        <p className="text-xs text-slate-500 flex items-center gap-1">{f.icon}{f.label}</p>
+                        {f.link ? (
+                          <a href={f.value.startsWith('http') ? f.value : `https://${f.value}`} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[#A100FF] hover:underline truncate block">{f.value}</a>
+                        ) : (
+                          <p className="text-sm font-medium text-slate-900 truncate">{f.value}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Company Description */}
+                  {selectedLead.company_description && (
+                    <div className="bg-slate-50 rounded-lg p-3">
+                      <p className="text-xs text-slate-500 mb-1">Company Description</p>
+                      <p className="text-sm text-slate-700">{selectedLead.company_description}</p>
+                    </div>
+                  )}
+
+                  {/* Notes */}
+                  {selectedLead.notes && (
+                    <div className="bg-slate-50 rounded-lg p-3">
+                      <p className="text-xs text-slate-500 mb-1">Notes</p>
+                      <p className="text-sm text-slate-700">{selectedLead.notes}</p>
+                    </div>
+                  )}
+
+                  {/* AI Enrichment Data */}
+                  {selectedLead.enrichment && (
+                    <div className="bg-purple-50 rounded-lg p-4 border border-purple-100 space-y-2">
+                      <p className="text-sm font-medium text-purple-900 flex items-center gap-1"><Wand2 className="w-4 h-4" /> AI Enrichment</p>
+                      {selectedLead.enrichment.recommended_approach && (
+                        <p className="text-sm text-slate-700"><strong>Approach:</strong> {selectedLead.enrichment.recommended_approach}</p>
+                      )}
+                      {selectedLead.enrichment.technologies?.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          <span className="text-xs text-slate-500 mr-1">Tech:</span>
+                          {selectedLead.enrichment.technologies.map((t, i) => (
+                            <Badge key={i} variant="secondary" className="text-xs">{t}</Badge>
+                          ))}
+                        </div>
+                      )}
+                      {selectedLead.enrichment.interests?.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          <span className="text-xs text-slate-500 mr-1">Interests:</span>
+                          {selectedLead.enrichment.interests.map((t, i) => (
+                            <Badge key={i} variant="outline" className="text-xs">{t}</Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Action buttons */}
+                  <div className="flex gap-2 pt-1">
+                    <Button size="sm" variant="outline" onClick={() => navigate(`/chat?type=lead&id=${selectedLead.lead_id}`)}>
+                      <MessageSquare className="w-3.5 h-3.5 mr-1" /> Discuss
+                    </Button>
+                    {selectedLead.phone && (
+                      <Button size="sm" variant="outline" onClick={() => navigate(`/calls?lead=${selectedLead.lead_id}`)}>
+                        <Phone className="w-3.5 h-3.5 mr-1" /> Call
+                      </Button>
+                    )}
+                    {selectedLead.email && (
+                      <AIEmailComposer leadId={selectedLead.lead_id} leadName={`${selectedLead.first_name} ${selectedLead.last_name}`} />
+                    )}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 };
