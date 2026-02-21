@@ -2450,7 +2450,7 @@ async def create_stripe_checkout(
     stripe_checkout = StripeCheckout(api_key=api_key, webhook_url=webhook_url)
     
     success_url = f"{origin_url}/dashboard?payment=success&session_id={{CHECKOUT_SESSION_ID}}"
-    cancel_url = f"{origin_url}/pricing?payment=cancelled"
+    cancel_url = f"{origin_url}/settings?payment=cancelled"
     
     payment_methods = ["card"]
     currency = "eur"
@@ -3431,7 +3431,7 @@ async def create_subscription_checkout(
     
     # Create URLs
     success_url = f"{request.origin_url}/subscription/success?session_id={{CHECKOUT_SESSION_ID}}"
-    cancel_url = f"{request.origin_url}/pricing"
+    cancel_url = f"{request.origin_url}/settings?payment=cancelled"
     
     # Initialize Stripe
     host_url = str(http_request.base_url).rstrip('/')
