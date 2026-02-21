@@ -414,6 +414,7 @@ const SettingsPage = () => {
             <TabsTrigger value="team">Team & Invites</TabsTrigger>
             <TabsTrigger value="billing">Billing & Invoices</TabsTrigger>
             <TabsTrigger value="integrations">Integrations</TabsTrigger>
+            <TabsTrigger value="app" data-testid="settings-app-tab">Mobile App</TabsTrigger>
           </TabsList>
 
           {/* Profile Tab */}
