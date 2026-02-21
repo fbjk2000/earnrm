@@ -411,8 +411,9 @@ const LeadsPage = () => {
                 {filteredLeads.map((lead, index) => (
                   <div
                     key={lead.lead_id}
-                    className="p-4 hover:bg-slate-50 transition-colors"
+                    className="p-4 hover:bg-slate-50 transition-colors cursor-pointer"
                     data-testid={`lead-row-${index}`}
+                    onClick={() => openLeadDetail(lead)}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
