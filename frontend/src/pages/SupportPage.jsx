@@ -716,7 +716,8 @@ const SupportPage = () => {
         </Tabs>
       </main>
 
-      {/* Footer */}
+      {/* Footer - only for non-authenticated */}
+      {!user && (
       <footer className="bg-slate-900 py-8 px-6">
         <div className="max-w-7xl mx-auto text-center">
           <p className="text-slate-400 text-sm">
@@ -727,8 +728,14 @@ const SupportPage = () => {
           </p>
         </div>
       </footer>
+      )}
     </div>
   );
+
+  if (user) {
+    return <DashboardLayout>{supportContent}</DashboardLayout>;
+  }
+  return supportContent;
 };
 
 export default SupportPage;
