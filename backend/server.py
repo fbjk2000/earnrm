@@ -2086,6 +2086,88 @@ async def score_lead(lead_id: str, current_user: dict = Depends(get_current_user
         logger.error(f"AI scoring error: {e}")
         raise HTTPException(status_code=500, detail="AI scoring failed")
 
+@api_router.post("/ai/enrich-lead/{lead_id}")
+async def enrich_lead(lead_id: str, current_user: dict = Depends(get_current_user)):
+    """AI-powered lead enrichment - fills in missing info about a lead"""
+    lead = await db.leads.find_one(
+        {"lead_id": lead_id, "organization_id": current_user.get("organization_id")},
+        {"_id": 0}
+    )
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+
+    try:
+        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        api_key = os.environ.get("EMERGENT_LLM_KEY")
+
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"enrich_{lead_id}",
+            system_message="""You are a B2B lead enrichment AI. Based on available lead info, generate realistic and plausible enrichment data. Return ONLY a JSON object with these fields (use null if you truly cannot infer):
+- company_description: brief company description (1-2 sentences)
+- industry: company industry
+- company_size: estimated employee count range (e.g. "11-50", "51-200")
+- website: likely company website URL
+- job_title: refined job title if missing or vague
+- linkedin_url: likely LinkedIn profile URL format
+- phone: likely business phone format if missing
+- location: likely city/country
+- technologies: array of likely tech stack used
+- interests: array of likely business interests
+- recommended_approach: 1-2 sentence sales approach recommendation
+Return ONLY valid JSON, no markdown."""
+        ).with_model("openai", "gpt-5.2")
+
+        lead_info = f"""Lead to enrich:
+- Name: {lead.get('first_name','')} {lead.get('last_name','')}
+- Email: {lead.get('email','Not provided')}
+- Company: {lead.get('company','Not provided')}
+- Job Title: {lead.get('job_title','Not provided')}
+- Phone: {lead.get('phone','Not provided')}
+- LinkedIn: {lead.get('linkedin_url','Not provided')}
+- Source: {lead.get('source','Unknown')}"""
+
+        response = await chat.send_message(UserMessage(text=f"Enrich this lead:\n{lead_info}"))
+
+        import json
+        try:
+            enrichment = json.loads(response.strip().strip('```json').strip('```'))
+        except:
+            enrichment = {"recommended_approach": response[:300]}
+
+        # Build update dict - only update fields that are empty/missing
+        updates = {"updated_at": datetime.now(timezone.utc).isoformat()}
+        field_map = {
+            "job_title": "job_title",
+            "linkedin_url": "linkedin_url",
+            "phone": "phone",
+            "website": "website",
+            "location": "location",
+            "industry": "industry",
+            "company_size": "company_size",
+            "company_description": "company_description",
+        }
+        for ai_field, db_field in field_map.items():
+            if enrichment.get(ai_field) and not lead.get(db_field):
+                updates[db_field] = enrichment[ai_field]
+
+        # Always store enrichment metadata
+        updates["enrichment"] = {
+            "technologies": enrichment.get("technologies", []),
+            "interests": enrichment.get("interests", []),
+            "recommended_approach": enrichment.get("recommended_approach", ""),
+            "enriched_at": datetime.now(timezone.utc).isoformat()
+        }
+
+        await db.leads.update_one({"lead_id": lead_id}, {"$set": updates})
+
+        updated_lead = await db.leads.find_one({"lead_id": lead_id}, {"_id": 0})
+        return {"lead_id": lead_id, "enrichment": enrichment, "lead": updated_lead}
+
+    except Exception as e:
+        logger.error(f"Lead enrichment error: {e}")
+        raise HTTPException(status_code=500, detail=f"Enrichment failed: {str(e)}")
+
 @api_router.post("/ai/draft-email")
 async def draft_email(
     lead_id: Optional[str] = None,
