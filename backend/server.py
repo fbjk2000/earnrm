@@ -670,13 +670,17 @@ async def process_google_session(request: Request, response: Response):
         max_age=7*24*60*60
     )
     
+    # Generate JWT token for consistent auth (same as email/password login)
+    jwt_token = create_jwt_token(user_id, email, user.get("organization_id"))
+    
     return {
         "user_id": user_id,
         "email": email,
         "name": name,
         "picture": picture,
         "organization_id": user.get("organization_id"),
-        "role": user.get("role", "member")
+        "role": user.get("role", "member"),
+        "token": jwt_token
     }
 
 @api_router.get("/auth/me")
