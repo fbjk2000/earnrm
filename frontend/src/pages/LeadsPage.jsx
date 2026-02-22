@@ -563,7 +563,7 @@ const LeadsPage = () => {
                       </div>
 
                       <div className="flex items-center gap-2 sm:gap-4" onClick={(e) => e.stopPropagation()}>
-                        {lead.ai_score && (
+                        {visibleCols.ai_score && lead.ai_score && (
                           <div className="flex items-center gap-1 px-2 py-1 bg-amber-50 rounded-full">
                             <Zap className="w-4 h-4 text-amber-500" />
                             <span className="text-sm font-medium text-amber-700">{lead.ai_score}</span>
