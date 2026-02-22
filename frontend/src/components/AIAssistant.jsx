@@ -229,14 +229,16 @@ export const AIEmailComposer = ({ leadId, leadName, onClose }) => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" className="gap-2" data-testid="ai-email-btn">
-          <Mail className="w-4 h-4" />
-          <Sparkles className="w-3 h-3 text-[#A100FF]" />
-          {leadId ? 'Draft Email' : 'AI Email'}
-        </Button>
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      {!onClose && (
+        <DialogTrigger asChild>
+          <Button variant="outline" className="gap-2" data-testid="ai-email-btn">
+            <Mail className="w-4 h-4" />
+            <Sparkles className="w-3 h-3 text-[#A100FF]" />
+            {leadId ? 'Draft Email' : 'AI Email'}
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
