@@ -70,11 +70,25 @@ const ChatPage = () => {
   const [showNewChannelDialog, setShowNewChannelDialog] = useState(false);
   const [newChannel, setNewChannel] = useState({ name: '', description: '' });
   const [lastFetchTime, setLastFetchTime] = useState(null);
+  const [collapsedSections, setCollapsedSections] = useState({});
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const pollIntervalRef = useRef(null);
 
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+  const toggleSection = (section) => setCollapsedSections(prev => ({ ...prev, [section]: !prev[section] }));
+
+  const archiveChannel = async (channelId) => {
+    try {
+      await axios.put(`${API}/chat/channels/${channelId}/archive`, {}, { headers, withCredentials: true });
+      toast.success('Channel archived');
+      setActiveChannel(null);
+      fetchChannels();
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Failed to archive');
+    }
+  };
 
   // Load contextual channel from URL params
   const loadContextualChannel = useCallback(async (contextType, contextId) => {
