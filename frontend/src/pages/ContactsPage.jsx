@@ -15,7 +15,7 @@ import axios from 'axios';
 import {
   Search, Users, Mail, Phone, Building, Linkedin, Globe, MapPin, Edit2,
   Save, Briefcase, Tag, Wand2, Target, DollarSign, Clock, MessageSquare,
-  Plus, Upload, Trash2
+  Plus, Upload, Trash2, Filter
 } from 'lucide-react';
 
 const ContactsPage = () => {
