@@ -4611,8 +4611,11 @@ async def bulk_update(request: BulkUpdateRequest, current_user: dict = Depends(g
     return {"updated": result.modified_count}
 
 @api_router.post("/bulk/add-to-campaign")
-async def bulk_add_to_campaign(campaign_id: str, entity_type: str, entity_ids: List[str], current_user: dict = Depends(get_current_user)):
+async def bulk_add_to_campaign(request: BulkAddToCampaignRequest, current_user: dict = Depends(get_current_user)):
     """Add leads or contacts to a campaign"""
+    campaign_id = request.campaign_id
+    entity_type = request.entity_type
+    entity_ids = request.entity_ids
     org_id = current_user.get("organization_id")
     campaign = await db.campaigns.find_one({"campaign_id": campaign_id, "organization_id": org_id})
     if not campaign:
