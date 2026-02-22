@@ -483,6 +483,34 @@ const LeadsPage = () => {
           </CardContent>
         </Card>
 
+        {/* Bulk Actions & Column Settings */}
+        <div className="flex items-center justify-between">
+          {selectedIds.length > 0 ? (
+            <div className="flex items-center gap-3 bg-purple-50 border border-purple-200 rounded-lg p-3 flex-1">
+              <span className="text-sm font-medium text-purple-800">{selectedIds.length} selected</span>
+              <Button size="sm" variant="outline" onClick={handleBulkEnrich} data-testid="bulk-enrich-btn"><Wand2 className="w-3.5 h-3.5 mr-1" /> Enrich</Button>
+              <Button size="sm" variant="outline" className="text-red-600 border-red-200" onClick={handleBulkDelete} data-testid="bulk-delete-btn"><X className="w-3.5 h-3.5 mr-1" /> Delete</Button>
+              <Button size="sm" variant="ghost" onClick={() => setSelectedIds([])}>Clear</Button>
+            </div>
+          ) : <div />}
+          <Button size="sm" variant="ghost" onClick={() => setShowColSettings(!showColSettings)} data-testid="column-settings-btn">
+            <Filter className="w-3.5 h-3.5 mr-1" /> Columns
+          </Button>
+        </div>
+
+        {showColSettings && (
+          <Card className="p-3">
+            <div className="flex flex-wrap gap-4">
+              {[{key:'company',label:'Company'},{key:'email',label:'Email'},{key:'phone',label:'Phone'},{key:'job_title',label:'Job Title'},{key:'source',label:'Source'},{key:'ai_score',label:'AI Score'}].map(col => (
+                <label key={col.key} className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input type="checkbox" checked={visibleCols[col.key]} onChange={() => setVisibleCols(prev => ({...prev, [col.key]: !prev[col.key]}))} className="accent-[#A100FF]" />
+                  {col.label}
+                </label>
+              ))}
+            </div>
+          </Card>
+        )}
+
         {/* Leads List */}
         <Card data-testid="leads-list">
           <CardContent className="p-0">
