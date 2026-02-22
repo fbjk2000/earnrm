@@ -191,8 +191,38 @@ const LeadsPage = () => {
       await axios.put(`${API}/leads/${leadId}`, { status }, axiosConfig);
       toast.success('Lead status updated');
       fetchLeads();
+      // If qualified, suggest conversion
+      if (status === 'qualified') {
+        const lead = leads.find(l => l.lead_id === leadId);
+        if (lead && lead.status !== 'converted') {
+          setConvertLead({ ...lead, status: 'qualified' });
+          setShowConvertDialog(true);
+        }
+      }
     } catch (error) {
       toast.error('Failed to update status');
+    }
+  };
+
+  const handleConvertToContact = async () => {
+    if (!convertLead) return;
+    setConverting(true);
+    try {
+      const res = await axios.post(
+        `${API}/leads/${convertLead.lead_id}/convert-to-contact`,
+        null,
+        { ...axiosConfig, params: { deal_id: convertDealId || undefined } }
+      );
+      toast.success(`${convertLead.first_name} converted to Contact`);
+      setShowConvertDialog(false);
+      setConvertLead(null);
+      setConvertDealId('');
+      fetchLeads();
+      navigate(`/contacts?detail=${res.data.contact_id}`);
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Conversion failed');
+    } finally {
+      setConverting(false);
     }
   };
 
