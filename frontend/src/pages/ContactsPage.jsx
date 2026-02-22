@@ -171,10 +171,26 @@ const ContactsPage = () => {
           </div>
         )}
 
-        <div className="relative max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <Input placeholder="Search contacts..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" data-testid="contacts-search" />
+        <div className="flex items-center justify-between">
+          <div className="relative max-w-sm">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Input placeholder="Search contacts..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" data-testid="contacts-search" />
+          </div>
+          <Button size="sm" variant="ghost" onClick={() => setShowColSettings(!showColSettings)} data-testid="contact-col-settings"><Filter className="w-3.5 h-3.5 mr-1" /> Columns</Button>
         </div>
+
+        {showColSettings && (
+          <Card className="p-3">
+            <div className="flex flex-wrap gap-4">
+              {[{key:'company',label:'Company'},{key:'email',label:'Email'},{key:'phone',label:'Phone'},{key:'job_title',label:'Job Title'},{key:'decision_maker',label:'Decision Maker'}].map(col => (
+                <label key={col.key} className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input type="checkbox" checked={visibleCols[col.key]} onChange={() => setVisibleCols(prev => ({...prev, [col.key]: !prev[col.key]}))} className="accent-[#A100FF]" />
+                  {col.label}
+                </label>
+              ))}
+            </div>
+          </Card>
+        )}
 
         <Card>
           <CardContent className="pt-4">
