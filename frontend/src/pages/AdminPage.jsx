@@ -282,7 +282,8 @@ const AdminPage = () => {
                           <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Email</th>
                           <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Role</th>
                           <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Organization</th>
-                          <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Actions</th>
+                          <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Last Login</th>
+                          <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Joined</th>
                         </tr>
                       </thead>
                       <tbody>
