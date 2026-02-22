@@ -3336,6 +3336,63 @@ async def get_contact_requests(current_user: dict = Depends(require_super_admin)
     requests = await db.contact_requests.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
     return {"contact_requests": requests, "count": len(requests)}
 
+@api_router.put("/admin/contact-requests/{request_id}/status")
+async def update_contact_request_status(request_id: str, status: str, notes: Optional[str] = None, current_user: dict = Depends(get_current_user)):
+    """Update support request status (super_admin, deputy_admin, or support role)"""
+    role = current_user.get("role", "member")
+    if role not in ["super_admin", "deputy_admin", "support"] and current_user.get("email") != SUPER_ADMIN_EMAIL:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    updates = {"status": status, "updated_at": datetime.now(timezone.utc).isoformat(), "handled_by": current_user["user_id"]}
+    if notes:
+        updates["admin_notes"] = notes
+    result = await db.contact_requests.update_one({"request_id": request_id}, {"$set": updates})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Request not found")
+    return {"message": "Status updated"}
+
+@api_router.get("/admin/analytics/users")
+async def admin_user_analytics(current_user: dict = Depends(require_super_admin)):
+    """Comprehensive user analytics"""
+    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).sort("created_at", -1).to_list(5000)
+    orgs = await db.organizations.find({}, {"_id": 0}).to_list(1000)
+    
+    # Build org lookup
+    org_map = {o["organization_id"]: o for o in orgs}
+    
+    # Get data counts per org
+    org_stats = {}
+    for org in orgs:
+        oid = org["organization_id"]
+        leads_count = await db.leads.count_documents({"organization_id": oid})
+        contacts_count = await db.contacts.count_documents({"organization_id": oid})
+        deals_count = await db.deals.count_documents({"organization_id": oid})
+        org_stats[oid] = {"leads": leads_count, "contacts": contacts_count, "deals": deals_count, "org_name": org.get("name",""), "plan": org.get("plan","free"), "user_count": org.get("user_count",1)}
+    
+    # Enrich users with org info
+    enriched_users = []
+    for u in users:
+        oid = u.get("organization_id")
+        user_info = {
+            "user_id": u["user_id"],
+            "email": u.get("email"),
+            "name": u.get("name"),
+            "role": u.get("role", "member"),
+            "organization_id": oid,
+            "org_name": org_map.get(oid, {}).get("name", "No org") if oid else "No org",
+            "org_plan": org_map.get(oid, {}).get("plan", "free") if oid else "none",
+            "created_at": u.get("created_at"),
+            "last_login": u.get("last_login"),
+        }
+        enriched_users.append(user_info)
+    
+    return {
+        "users": enriched_users,
+        "total_users": len(users),
+        "total_organizations": len(orgs),
+        "org_stats": org_stats
+    }
+
 # ==================== PLATFORM SETTINGS ROUTES ====================
 
 @api_router.get("/admin/settings")
