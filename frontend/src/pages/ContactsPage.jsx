@@ -312,6 +312,39 @@ const ContactsPage = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Add Contact Dialog */}
+      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>Add Contact</DialogTitle></DialogHeader>
+          <form onSubmit={handleAddContact} className="space-y-3 pt-2">
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label className="text-xs">First Name *</Label><Input value={newContact.first_name} onChange={(e) => setNewContact({ ...newContact, first_name: e.target.value })} required data-testid="new-contact-first" /></div>
+              <div><Label className="text-xs">Last Name</Label><Input value={newContact.last_name} onChange={(e) => setNewContact({ ...newContact, last_name: e.target.value })} data-testid="new-contact-last" /></div>
+              <div><Label className="text-xs">Email</Label><Input value={newContact.email} onChange={(e) => setNewContact({ ...newContact, email: e.target.value })} data-testid="new-contact-email" /></div>
+              <div><Label className="text-xs">Phone</Label><Input value={newContact.phone} onChange={(e) => setNewContact({ ...newContact, phone: e.target.value })} data-testid="new-contact-phone" /></div>
+              <div><Label className="text-xs">Company</Label><Input value={newContact.company} onChange={(e) => setNewContact({ ...newContact, company: e.target.value })} /></div>
+              <div><Label className="text-xs">Job Title</Label><Input value={newContact.job_title} onChange={(e) => setNewContact({ ...newContact, job_title: e.target.value })} /></div>
+            </div>
+            <Button type="submit" className="w-full bg-[#A100FF] hover:bg-purple-700" data-testid="save-new-contact"><Plus className="w-4 h-4 mr-2" /> Create Contact</Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Import CSV Dialog */}
+      <Dialog open={showImportDialog} onOpenChange={setShowImportDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>Import Contacts</DialogTitle></DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div className="border-2 border-dashed border-slate-200 rounded-lg p-6 text-center">
+              <Upload className="w-8 h-8 mx-auto text-slate-400 mb-2" />
+              <p className="text-sm text-slate-600 mb-2">Upload a CSV file with contact data</p>
+              <p className="text-xs text-slate-400 mb-3">Columns: first_name, last_name, email, phone, company, job_title, linkedin_url, website, location</p>
+              <input type="file" accept=".csv" onChange={handleImportCSV} className="text-sm" data-testid="import-csv-input" />
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 };
