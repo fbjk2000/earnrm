@@ -80,25 +80,31 @@ const AuthProvider = ({ children }) => {
 
   const checkAuth = async () => {
     const storedToken = localStorage.getItem('token');
-    if (!storedToken) {
-      setLoading(false);
-      return;
+    
+    if (storedToken) {
+      try {
+        const response = await axios.get(`${API}/auth/me`, {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${storedToken}` }
+        });
+        setUser(response.data);
+        setToken(storedToken);
+        return;
+      } catch (e) {
+        if (e.response && e.response.status === 401) {
+          localStorage.removeItem('token');
+          setToken(null);
+        }
+      }
     }
     
+    // Try cookie-based auth (for Google OAuth sessions)
     try {
-      const response = await axios.get(`${API}/auth/me`, {
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${storedToken}` }
-      });
+      const response = await axios.get(`${API}/auth/me`, { withCredentials: true });
       setUser(response.data);
-      setToken(storedToken);
     } catch (e) {
-      // Only clear token on auth errors (401), not network issues
-      if (e.response && e.response.status === 401) {
-        localStorage.removeItem('token');
-        setToken(null);
-        setUser(null);
-      }
+      // No valid session
+      setUser(null);
     } finally {
       setLoading(false);
     }
