@@ -455,76 +455,66 @@ const ChatPage = () => {
           </CardHeader>
           <CardContent className="flex-1 p-2 overflow-auto">
             {/* Group channels by type */}
-            <div className="space-y-4">
-              {/* General Channels */}
-              <div className="space-y-1">
-                <p className="text-xs font-semibold text-slate-500 px-3 uppercase">Channels</p>
-                {channels.filter(c => c.channel_type === 'general' || !c.channel_type).map((channel) => {
-                  const config = CHANNEL_CONFIG[channel.channel_type || 'general'];
-                  const Icon = config.icon;
-                  return (
-                    <button
-                      key={channel.channel_id}
-                      onClick={() => handleChannelSelect(channel)}
-                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors ${
-                        activeChannel?.channel_id === channel.channel_id
-                          ? 'bg-purple-100 text-[#A100FF]'
-                          : 'hover:bg-slate-100 text-slate-700'
-                      }`}
-                      data-testid={`channel-${channel.channel_id}`}
-                    >
-                      <Icon className="w-4 h-4 flex-shrink-0" />
-                      <span className="truncate">{channel.name}</span>
-                    </button>
-                  );
-                })}
+            <div className="space-y-2">
+              {/* General Channels - Collapsible */}
+              <div>
+                <button onClick={() => toggleSection('channels')} className="flex items-center gap-1 text-xs font-semibold text-slate-500 px-3 uppercase w-full hover:text-slate-700" data-testid="toggle-channels">
+                  {collapsedSections.channels ? <ChevronRight className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                  Channels
+                </button>
+                {!collapsedSections.channels && (
+                  <div className="space-y-1 mt-1">
+                    {channels.filter(c => c.channel_type === 'general' || !c.channel_type).map((channel) => {
+                      const config = CHANNEL_CONFIG[channel.channel_type || 'general'];
+                      const Icon = config.icon;
+                      return (
+                        <button key={channel.channel_id} onClick={() => handleChannelSelect(channel)} className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors ${activeChannel?.channel_id === channel.channel_id ? 'bg-purple-100 text-[#A100FF]' : 'hover:bg-slate-100 text-slate-700'}`} data-testid={`channel-${channel.channel_id}`}>
+                          <Icon className="w-4 h-4 flex-shrink-0" />
+                          <span className="truncate">{channel.name}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
               
-              {/* Contextual Channels - Leads */}
+              {/* Lead Discussions - Collapsible */}
               {channels.filter(c => c.channel_type === 'lead').length > 0 && (
-                <div className="space-y-1">
-                  <p className="text-xs font-semibold text-slate-500 px-3 uppercase flex items-center gap-1">
+                <div>
+                  <button onClick={() => toggleSection('leads')} className="flex items-center gap-1 text-xs font-semibold text-slate-500 px-3 uppercase w-full hover:text-slate-700" data-testid="toggle-leads">
+                    {collapsedSections.leads ? <ChevronRight className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                     <UserCircle className="w-3 h-3" /> Lead Discussions
-                  </p>
-                  {channels.filter(c => c.channel_type === 'lead').map((channel) => (
-                    <button
-                      key={channel.channel_id}
-                      onClick={() => handleChannelSelect(channel)}
-                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors ${
-                        activeChannel?.channel_id === channel.channel_id
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'hover:bg-slate-100 text-slate-700'
-                      }`}
-                      data-testid={`channel-${channel.channel_id}`}
-                    >
-                      <UserCircle className="w-4 h-4 flex-shrink-0 text-blue-600" />
-                      <span className="truncate">{channel.name}</span>
-                    </button>
-                  ))}
+                  </button>
+                  {!collapsedSections.leads && (
+                    <div className="space-y-1 mt-1">
+                      {channels.filter(c => c.channel_type === 'lead').map((channel) => (
+                        <button key={channel.channel_id} onClick={() => handleChannelSelect(channel)} className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors ${activeChannel?.channel_id === channel.channel_id ? 'bg-blue-100 text-blue-700' : 'hover:bg-slate-100 text-slate-700'}`} data-testid={`channel-${channel.channel_id}`}>
+                          <UserCircle className="w-4 h-4 flex-shrink-0 text-blue-600" />
+                          <span className="truncate">{channel.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
               
-              {/* Contextual Channels - Deals */}
+              {/* Deal Discussions - Collapsible */}
               {channels.filter(c => c.channel_type === 'deal').length > 0 && (
-                <div className="space-y-1">
-                  <p className="text-xs font-semibold text-slate-500 px-3 uppercase flex items-center gap-1">
+                <div>
+                  <button onClick={() => toggleSection('deals')} className="flex items-center gap-1 text-xs font-semibold text-slate-500 px-3 uppercase w-full hover:text-slate-700" data-testid="toggle-deals">
+                    {collapsedSections.deals ? <ChevronRight className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                     <Target className="w-3 h-3" /> Deal Discussions
-                  </p>
-                  {channels.filter(c => c.channel_type === 'deal').map((channel) => (
-                    <button
-                      key={channel.channel_id}
-                      onClick={() => handleChannelSelect(channel)}
-                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors ${
-                        activeChannel?.channel_id === channel.channel_id
-                          ? 'bg-emerald-100 text-emerald-700'
-                          : 'hover:bg-slate-100 text-slate-700'
-                      }`}
-                      data-testid={`channel-${channel.channel_id}`}
-                    >
-                      <Target className="w-4 h-4 flex-shrink-0 text-emerald-600" />
-                      <span className="truncate">{channel.name}</span>
-                    </button>
-                  ))}
+                  </button>
+                  {!collapsedSections.deals && (
+                    <div className="space-y-1 mt-1">
+                      {channels.filter(c => c.channel_type === 'deal').map((channel) => (
+                        <button key={channel.channel_id} onClick={() => handleChannelSelect(channel)} className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors ${activeChannel?.channel_id === channel.channel_id ? 'bg-emerald-100 text-emerald-700' : 'hover:bg-slate-100 text-slate-700'}`} data-testid={`channel-${channel.channel_id}`}>
+                          <Target className="w-4 h-4 flex-shrink-0 text-emerald-600" />
+                          <span className="truncate">{channel.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
