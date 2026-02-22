@@ -61,6 +61,7 @@ const AdminPage = () => {
     commission_rate_tier2: 10,
     commission_rate_tier3: 5
   });
+  const [supportRequests, setSupportRequests] = useState([]);
 
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
@@ -71,13 +72,14 @@ const AdminPage = () => {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [statsRes, orgsRes, usersRes, discountsRes, affiliatesRes, settingsRes] = await Promise.all([
+      const [statsRes, orgsRes, usersRes, discountsRes, affiliatesRes, settingsRes, supportRes] = await Promise.all([
         axios.get(`${API}/admin/stats`, { headers, withCredentials: true }).catch(() => null),
         axios.get(`${API}/admin/organizations`, { headers, withCredentials: true }).catch(() => null),
         axios.get(`${API}/admin/users`, { headers, withCredentials: true }).catch(() => null),
         axios.get(`${API}/admin/discount-codes`, { headers, withCredentials: true }).catch(() => null),
         axios.get(`${API}/admin/affiliates`, { headers, withCredentials: true }).catch(() => null),
-        axios.get(`${API}/admin/settings`, { headers, withCredentials: true }).catch(() => null)
+        axios.get(`${API}/admin/settings`, { headers, withCredentials: true }).catch(() => null),
+        axios.get(`${API}/admin/contact-requests`, { headers, withCredentials: true }).catch(() => null)
       ]);
 
       if (statsRes) setStats(statsRes.data);
@@ -86,6 +88,7 @@ const AdminPage = () => {
       if (discountsRes) setDiscountCodes(discountsRes.data.discount_codes || []);
       if (affiliatesRes) setAffiliates(affiliatesRes.data.affiliates || []);
       if (settingsRes) setPlatformSettings(settingsRes.data);
+      if (supportRes) setSupportRequests(supportRes.data.contact_requests || []);
     } catch (error) {
       if (error.response?.status === 403) {
         toast.error('Super admin access required');
@@ -95,6 +98,14 @@ const AdminPage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleUpdateSupportStatus = async (requestId, status) => {
+    try {
+      await axios.put(`${API}/admin/contact-requests/${requestId}/status?status=${status}`, {}, { headers, withCredentials: true });
+      toast.success('Status updated');
+      fetchAllData();
+    } catch { toast.error('Failed to update'); }
   };
 
   const handleUpdateSettings = async (settingKey, value) => {
