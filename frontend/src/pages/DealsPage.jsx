@@ -159,7 +159,10 @@ const DealsPage = () => {
       const dealData = {
         ...newDeal,
         value: parseFloat(newDeal.value) || 0,
-        probability: parseInt(newDeal.probability) || 0
+        probability: parseInt(newDeal.probability) || 0,
+        lead_id: newDeal.lead_id && newDeal.lead_id !== 'none' ? newDeal.lead_id : null,
+        contact_id: newDeal.contact_id && newDeal.contact_id !== 'none' ? newDeal.contact_id : null,
+        company_id: newDeal.company_id && newDeal.company_id !== 'none' ? newDeal.company_id : null,
       };
       
       // Remove empty dates
