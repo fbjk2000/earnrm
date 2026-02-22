@@ -730,6 +730,8 @@ async def process_google_session(request: Request, response: Response):
         # Update picture if changed
         if picture and picture != user.get("picture"):
             await db.users.update_one({"user_id": user_id}, {"$set": {"picture": picture}})
+        # Track last login
+        await db.users.update_one({"user_id": user_id}, {"$set": {"last_login": datetime.now(timezone.utc).isoformat()}})
     
     # Store session
     session_doc = {
