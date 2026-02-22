@@ -187,8 +187,10 @@ const ContactsPage = () => {
             ) : (
               <div className="divide-y divide-slate-100">
                 {filtered.map((c, i) => (
-                  <div key={c.contact_id} className="p-4 hover:bg-slate-50 cursor-pointer transition-colors" onClick={() => openDetail(c)} data-testid={`contact-row-${i}`}>
-                    <div className="flex items-center justify-between">
+                  <div key={c.contact_id} className="p-4 hover:bg-slate-50 cursor-pointer transition-colors flex items-center gap-3" data-testid={`contact-row-${i}`}>
+                    <input type="checkbox" checked={selectedIds.includes(c.contact_id)} onChange={() => toggleSelect(c.contact_id)} onClick={(e) => e.stopPropagation()} className="w-4 h-4 accent-[#A100FF]" />
+                    <div className="flex-1" onClick={() => openDetail(c)}>
+                      <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
                           <span className="text-emerald-700 font-medium">{c.first_name?.[0]}{c.last_name?.[0]}</span>
