@@ -74,10 +74,32 @@ const LeadsPage = () => {
   const [saving, setSaving] = useState(false);
   const [enriching, setEnriching] = useState(false);
   const [scoring, setScoring] = useState(null);
+  const [showConvertDialog, setShowConvertDialog] = useState(false);
+  const [convertLead, setConvertLead] = useState(null);
+  const [convertDealId, setConvertDealId] = useState('');
+  const [converting, setConverting] = useState(false);
+  const [deals, setDeals] = useState([]);
 
   useEffect(() => {
     fetchLeads();
+    fetchDeals();
   }, [statusFilter]);
+
+  // Auto-open lead detail from URL param
+  useEffect(() => {
+    const detailId = searchParams.get('detail');
+    if (detailId && leads.length > 0) {
+      const lead = leads.find(l => l.lead_id === detailId);
+      if (lead) openLeadDetail(lead);
+    }
+  }, [leads]);
+
+  const fetchDeals = async () => {
+    try {
+      const res = await axios.get(`${API}/deals`, { headers, withCredentials: true });
+      setDeals(res.data);
+    } catch {}
+  };
 
   const fetchLeads = async () => {
     try {
