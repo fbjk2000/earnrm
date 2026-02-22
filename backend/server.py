@@ -353,6 +353,25 @@ class ContactFormSubmit(BaseModel):
     subject: str
     message: str
 
+# Bulk Operations Models
+class BulkDeleteRequest(BaseModel):
+    entity_type: str
+    entity_ids: List[str]
+
+class BulkUpdateRequest(BaseModel):
+    entity_type: str
+    entity_ids: List[str]
+    updates: dict
+
+class BulkEnrichRequest(BaseModel):
+    entity_type: str
+    entity_ids: List[str]
+
+class BulkAddToCampaignRequest(BaseModel):
+    campaign_id: str
+    entity_type: str
+    entity_ids: List[str]
+
 class PlatformSettings(BaseModel):
     model_config = ConfigDict(extra="ignore")
     setting_id: str = "platform_settings"
