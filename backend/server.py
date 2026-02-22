@@ -3988,7 +3988,7 @@ async def get_chat_channels(current_user: dict = Depends(get_current_user)):
         return {"channels": []}
     
     channels = await db.chat_channels.find(
-        {"organization_id": current_user["organization_id"]},
+        {"organization_id": current_user["organization_id"], "archived": {"$ne": True}},
         {"_id": 0}
     ).sort("last_message_at", -1).to_list(100)
     
