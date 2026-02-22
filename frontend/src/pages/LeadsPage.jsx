@@ -275,6 +275,29 @@ const LeadsPage = () => {
     }
   };
 
+  const toggleSelect = (id) => setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+
+  const handleBulkDelete = async () => {
+    if (!selectedIds.length) return;
+    try {
+      await axios.post(`${API}/bulk/delete`, { entity_type: 'lead', entity_ids: selectedIds }, axiosConfig);
+      toast.success(`Deleted ${selectedIds.length} leads`);
+      setSelectedIds([]);
+      fetchLeads();
+    } catch { toast.error('Failed to delete'); }
+  };
+
+  const handleBulkEnrich = async () => {
+    if (!selectedIds.length) return;
+    toast.info(`Enriching ${selectedIds.length} leads...`);
+    try {
+      const res = await axios.post(`${API}/bulk/enrich`, { entity_type: 'lead', entity_ids: selectedIds }, axiosConfig);
+      toast.success(`Enriched ${res.data.enriched} leads`);
+      setSelectedIds([]);
+      fetchLeads();
+    } catch { toast.error('Enrichment failed'); }
+  };
+
   const filteredLeads = leads.filter(lead => {
     const searchLower = searchQuery.toLowerCase();
     return (
