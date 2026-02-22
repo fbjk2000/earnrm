@@ -281,7 +281,8 @@ const LeadsPage = () => {
     { value: 'new', label: 'New', color: 'bg-slate-100 text-slate-700' },
     { value: 'contacted', label: 'Contacted', color: 'bg-purple-100 text-purple-700' },
     { value: 'qualified', label: 'Qualified', color: 'bg-emerald-100 text-emerald-700' },
-    { value: 'unqualified', label: 'Unqualified', color: 'bg-rose-100 text-rose-700' }
+    { value: 'unqualified', label: 'Unqualified', color: 'bg-rose-100 text-rose-700' },
+    { value: 'converted', label: 'Converted', color: 'bg-blue-100 text-blue-700' }
   ];
 
   return (
