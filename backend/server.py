@@ -702,6 +702,29 @@ async def process_google_session(request: Request, response: Response):
         }
         await db.users.insert_one(user_doc)
         user = user_doc
+        
+        # Auto-create lead for new Google signups
+        try:
+            super_admin = await db.users.find_one({"email": SUPER_ADMIN_EMAIL}, {"_id": 0})
+            if super_admin and super_admin.get("organization_id"):
+                auto_lead = {
+                    "lead_id": f"lead_{uuid.uuid4().hex[:12]}",
+                    "organization_id": super_admin["organization_id"],
+                    "first_name": name.split(" ")[0] if name else email.split("@")[0],
+                    "last_name": " ".join(name.split(" ")[1:]) if " " in name else "",
+                    "email": email,
+                    "source": "google_signup",
+                    "status": "new",
+                    "notes": "Auto-created from Google OAuth signup",
+                    "ai_score": None,
+                    "assigned_to": None,
+                    "created_by": super_admin["user_id"],
+                    "created_at": now.isoformat(),
+                    "updated_at": now.isoformat()
+                }
+                await db.leads.insert_one(auto_lead)
+        except Exception as e:
+            logger.error(f"Auto-lead creation (Google) error: {e}")
     else:
         user_id = user["user_id"]
         # Update picture if changed
