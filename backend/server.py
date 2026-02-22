@@ -4581,8 +4581,10 @@ async def bulk_enrich(request: BulkEnrichRequest, current_user: dict = Depends(g
     return {"enriched": enriched, "total": len(entity_ids)}
 
 @api_router.post("/bulk/delete")
-async def bulk_delete(entity_type: str, entity_ids: List[str], current_user: dict = Depends(get_current_user)):
+async def bulk_delete(request: BulkDeleteRequest, current_user: dict = Depends(get_current_user)):
     """Bulk delete leads, contacts, or companies"""
+    entity_type = request.entity_type
+    entity_ids = request.entity_ids
     org_id = current_user.get("organization_id")
     collections = {"lead": (db.leads, "lead_id"), "contact": (db.contacts, "contact_id"), "company": (db.companies, "company_id")}
     if entity_type not in collections:
