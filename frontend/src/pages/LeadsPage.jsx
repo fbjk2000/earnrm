@@ -78,7 +78,7 @@ const LeadsPage = () => {
   const [scoring, setScoring] = useState(null);
   const [showConvertDialog, setShowConvertDialog] = useState(false);
   const [convertLead, setConvertLead] = useState(null);
-  const [convertDealId, setConvertDealId] = useState('');
+  const [convertDealId, setConvertDealId] = useState('none');
   const [converting, setConverting] = useState(false);
   const [deals, setDeals] = useState([]);
 
@@ -213,12 +213,12 @@ const LeadsPage = () => {
       const res = await axios.post(
         `${API}/leads/${convertLead.lead_id}/convert-to-contact`,
         null,
-        { ...axiosConfig, params: { deal_id: convertDealId || undefined } }
+        { ...axiosConfig, params: { deal_id: convertDealId !== 'none' ? convertDealId : undefined } }
       );
       toast.success(`${convertLead.first_name} converted to Contact`);
       setShowConvertDialog(false);
       setConvertLead(null);
-      setConvertDealId('');
+      setConvertDealId('none');
       fetchLeads();
       navigate(`/contacts?detail=${res.data.contact_id}`);
     } catch (err) {
@@ -794,7 +794,7 @@ const LeadsPage = () => {
                 <Select value={convertDealId} onValueChange={setConvertDealId}>
                   <SelectTrigger data-testid="convert-deal-select"><SelectValue placeholder="No deal linked" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">No deal</SelectItem>
+                    <SelectItem value="none">No deal</SelectItem>
                     {deals.map(d => <SelectItem key={d.deal_id} value={d.deal_id}>{d.name} — €{d.value}</SelectItem>)}
                   </SelectContent>
                 </Select>
