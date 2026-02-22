@@ -3418,6 +3418,64 @@ async def admin_user_analytics(current_user: dict = Depends(require_super_admin)
         "org_stats": org_stats
     }
 
+# ==================== DATA EXPLORER (SUPER ADMIN ONLY) ====================
+
+@api_router.get("/admin/data-explorer/{collection}")
+async def data_explorer(collection: str, skip: int = 0, limit: int = 50, search: Optional[str] = None, current_user: dict = Depends(get_current_user)):
+    """Browse any MongoDB collection (super_admin only)"""
+    if current_user.get("role") != "super_admin" and current_user.get("email") != SUPER_ADMIN_EMAIL:
+        raise HTTPException(status_code=403, detail="Super admin access required")
+    
+    allowed = ["users", "organizations", "leads", "contacts", "deals", "tasks", "companies", "campaigns",
+               "calls", "scheduled_calls", "chat_channels", "messages", "notifications", "invites",
+               "affiliates", "affiliate_referrals", "discount_codes", "payment_transactions", "invoices",
+               "contact_requests", "platform_settings", "user_sessions"]
+    if collection not in allowed:
+        raise HTTPException(status_code=400, detail=f"Collection not allowed. Available: {', '.join(allowed)}")
+    
+    coll = db[collection]
+    query = {}
+    if search:
+        query = {"$or": [
+            {f: {"$regex": search, "$options": "i"}}
+            for f in ["email", "name", "first_name", "last_name", "title", "company", "organization_id", "status"]
+        ]}
+        # Ignore fields that don't exist — MongoDB handles this gracefully
+    
+    total = await coll.count_documents(query)
+    
+    # Exclude password hashes and _id
+    projection = {"_id": 0}
+    if collection == "users":
+        projection["password_hash"] = 0
+    
+    docs = await coll.find(query, projection).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    
+    # Get field names from first few docs
+    fields = set()
+    for d in docs[:10]:
+        fields.update(d.keys())
+    
+    return {"collection": collection, "total": total, "skip": skip, "limit": limit, "fields": sorted(fields), "data": docs}
+
+@api_router.get("/admin/data-explorer")
+async def list_collections(current_user: dict = Depends(get_current_user)):
+    """List available collections (super_admin only)"""
+    if current_user.get("role") != "super_admin" and current_user.get("email") != SUPER_ADMIN_EMAIL:
+        raise HTTPException(status_code=403, detail="Super admin access required")
+    
+    collections = ["users", "organizations", "leads", "contacts", "deals", "tasks", "companies", "campaigns",
+                    "calls", "scheduled_calls", "chat_channels", "messages", "notifications", "invites",
+                    "affiliates", "discount_codes", "payment_transactions", "invoices", "contact_requests"]
+    
+    stats = {}
+    for c in collections:
+        count = await db[c].count_documents({})
+        if count > 0:
+            stats[c] = count
+    
+    return {"collections": stats}
+
 # ==================== PLATFORM SETTINGS ROUTES ====================
 
 @api_router.get("/admin/settings")
