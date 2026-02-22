@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Badge } from '../components/ui/badge';
 import { toast } from 'sonner';
 import axios from 'axios';
-import { Plus, MoreVertical, Euro, Calendar, Percent, Tag, Filter, X, Users, MessageSquare } from 'lucide-react';
+import { Plus, MoreVertical, Euro, Calendar, Percent, Tag, Filter, X, Users, MessageSquare, LayoutGrid, List, Trash2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
