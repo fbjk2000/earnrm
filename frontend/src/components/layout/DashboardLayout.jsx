@@ -32,6 +32,7 @@ const DashboardLayout = ({ children }) => {
   const navItems = [
     { path: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
     { path: '/leads', label: 'Leads', icon: <Users className="w-5 h-5" /> },
+    { path: '/contacts', label: 'Contacts', icon: <UserCheck className="w-5 h-5" /> },
     { path: '/deals', label: 'Deals', icon: <Target className="w-5 h-5" /> },
     { path: '/tasks', label: 'Tasks', icon: <CheckSquare className="w-5 h-5" /> },
     { path: '/pipeline', label: 'Pipeline', icon: <BarChart3 className="w-5 h-5" /> },
