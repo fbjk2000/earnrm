@@ -580,6 +580,12 @@ const LeadsPage = () => {
                                 </a>
                               </DropdownMenuItem>
                             )}
+                            {lead.status === 'qualified' && lead.status !== 'converted' && (
+                              <DropdownMenuItem onClick={() => { setConvertLead(lead); setShowConvertDialog(true); }}>
+                                <Users className="w-4 h-4 mr-2" />
+                                Convert to Contact
+                              </DropdownMenuItem>
+                            )}
                             <DropdownMenuItem
                               className="text-rose-600"
                               onClick={() => handleDeleteLead(lead.lead_id)}
