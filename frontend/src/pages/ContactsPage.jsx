@@ -148,7 +148,26 @@ const ContactsPage = () => {
             <h1 className="text-2xl font-bold text-slate-900" data-testid="contacts-title">Contacts</h1>
             <p className="text-slate-500 text-sm mt-1">Converted leads and customer profiles</p>
           </div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setShowImportDialog(true)} data-testid="import-contacts-btn">
+              <Upload className="w-4 h-4 mr-2" /> Import CSV
+            </Button>
+            <Button className="bg-[#A100FF] hover:bg-purple-700" onClick={() => setShowAddDialog(true)} data-testid="add-contact-btn">
+              <Plus className="w-4 h-4 mr-2" /> Add Contact
+            </Button>
+          </div>
         </div>
+
+        {/* Bulk actions bar */}
+        {selectedIds.length > 0 && (
+          <div className="flex items-center gap-3 bg-purple-50 border border-purple-200 rounded-lg p-3">
+            <span className="text-sm font-medium text-purple-800">{selectedIds.length} selected</span>
+            <Button size="sm" variant="outline" className="text-red-600 border-red-200" onClick={handleBulkDelete}>
+              <Trash2 className="w-3.5 h-3.5 mr-1" /> Delete
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => setSelectedIds([])}>Clear</Button>
+          </div>
+        )}
 
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
