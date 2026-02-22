@@ -189,11 +189,11 @@ class DealCreate(BaseModel):
     stage: str = "lead"
     probability: int = 0
     lead_id: Optional[str] = None
+    contact_id: Optional[str] = None
     company_id: Optional[str] = None
     expected_close_date: Optional[datetime] = None
     tags: List[str] = []
     notes: Optional[str] = None
-    # Optional task when creating a deal
     task_title: Optional[str] = None
     task_owner_id: Optional[str] = None
     task_description: Optional[str] = None
