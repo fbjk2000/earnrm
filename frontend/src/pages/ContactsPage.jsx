@@ -14,7 +14,8 @@ import { toast } from 'sonner';
 import axios from 'axios';
 import {
   Search, Users, Mail, Phone, Building, Linkedin, Globe, MapPin, Edit2,
-  Save, Briefcase, Tag, Wand2, Target, DollarSign, Clock, MessageSquare
+  Save, Briefcase, Tag, Wand2, Target, DollarSign, Clock, MessageSquare,
+  Plus, Upload, Trash2
 } from 'lucide-react';
 
 const ContactsPage = () => {
@@ -23,6 +24,10 @@ const ContactsPage = () => {
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showImportDialog, setShowImportDialog] = useState(false);
+  const [newContact, setNewContact] = useState({ first_name: '', last_name: '', email: '', phone: '', company: '', job_title: '' });
+  const [selectedIds, setSelectedIds] = useState([]);
   const [selectedContact, setSelectedContact] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState({});
