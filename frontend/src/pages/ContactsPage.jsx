@@ -224,7 +224,7 @@ const ContactsPage = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        {c.decision_maker && <Badge className="bg-amber-100 text-amber-700 text-xs">Decision Maker</Badge>}
+                        {visibleCols.decision_maker && c.decision_maker && <Badge className="bg-amber-100 text-amber-700 text-xs">Decision Maker</Badge>}
                         {c.ai_score && <Badge className="bg-purple-100 text-purple-700 text-xs">{c.ai_score}/100</Badge>}
                       </div>
                       </div>
