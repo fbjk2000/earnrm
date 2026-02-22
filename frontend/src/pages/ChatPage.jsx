@@ -210,9 +210,10 @@ const ChatPage = () => {
   // Get the link to navigate to the related entity
   const getEntityLink = () => {
     if (!activeChannel || !activeChannel.channel_type || activeChannel.channel_type === 'general') return null;
+    const entityId = activeChannel.related_id;
     const links = {
-      lead: `/leads`,
-      deal: `/deals`,
+      lead: `/leads?detail=${entityId}`,
+      deal: `/deals?detail=${entityId}`,
       task: `/tasks`,
       company: `/companies`
     };
