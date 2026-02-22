@@ -872,6 +872,11 @@ const LeadsPage = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Email Composer - at page level to avoid nested dialog issues */}
+      {emailLeadId && (
+        <AIEmailComposer leadId={emailLeadId} leadName={emailLeadName} onClose={() => { setEmailLeadId(null); setEmailLeadName(''); }} />
+      )}
     </DashboardLayout>
   );
 };
