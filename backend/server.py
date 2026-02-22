@@ -4538,8 +4538,10 @@ async def import_contacts_csv(file: UploadFile = File(...), current_user: dict =
     return {"count": count, "message": f"Imported {count} contacts"}
 
 @api_router.post("/bulk/enrich")
-async def bulk_enrich(entity_type: str, entity_ids: List[str], current_user: dict = Depends(get_current_user)):
+async def bulk_enrich(request: BulkEnrichRequest, current_user: dict = Depends(get_current_user)):
     """Bulk AI enrich leads or contacts"""
+    entity_type = request.entity_type
+    entity_ids = request.entity_ids
     org_id = current_user.get("organization_id")
     collection = db.leads if entity_type == 'lead' else db.contacts
     id_field = 'lead_id' if entity_type == 'lead' else 'contact_id'
