@@ -6,33 +6,27 @@ earnrm - "Your CRM that pAIs you back". AI-powered CRM.
 ## Access
 - **Email**: florian@unyted.world | **Password**: DavidConstantin18
 
-## Technical Stack
-React, TailwindCSS, Shadcn UI | FastAPI, Motor, MongoDB | JWT + Google OAuth | Stripe | Resend | GPT-5.2 | Twilio (phone pending)
-
 ## Roles
-- **super_admin**: Full platform access (discount codes, all admin features)
-- **deputy_admin**: Same as super_admin (discount codes, admin)
-- **support**: Can manage support requests
-- **owner**: Organization owner
-- **admin**: Organization admin
-- **member**: Regular member
+- **super_admin**: Full access + Data Explorer + Discount codes
+- **deputy_admin**: Same as super_admin
+- **support**: Support request management
+- **owner/admin/member**: Organization-level roles
 
 ## Implemented Features
 - [x] Full CRM (Leads, Deals, Tasks, Companies, Campaigns, Contacts)
-- [x] AI: lead scoring, email drafting, smart search, lead summary, call analysis, lead enrichment
-- [x] Lead detail/edit, Contact detail/edit with sales fields
+- [x] AI: scoring, email, search, summary, call analysis, enrichment
+- [x] **Deals: Kanban ↔ List view toggle** with select all + bulk delete
+- [x] **Select All** for Leads, Contacts, Deals (works with filters)
+- [x] **Data Explorer** — Super Admin can browse all MongoDB collections with search + pagination
+- [x] **Admin access restricted** — Only super_admin/deputy_admin see Admin in sidebar
+- [x] Bulk operations (enrich, update, delete, campaign linking)
+- [x] Lead → Contact conversion, Contact CSV import, manual creation
 - [x] Deal → Company/Contact/Lead linking
-- [x] Contact CSV import + manual creation
-- [x] Bulk operations (enrich, update, delete) + campaign linking
-- [x] Lead → Contact conversion
-- [x] Chat archive + collapsible channels
+- [x] Chat archive, collapsible channels
 - [x] Calling, Recording, AI Analysis, Scheduling
 - [x] Team Chat, Invitations, PWA, Affiliate program
-- [x] **Super Admin Dashboard**: User analytics (last login, joined date), org data stats, role management (deputy_admin, support roles)
-- [x] **Support Request Management**: View/update status (new, in_progress, resolved)
-- [x] **Auto-Lead from Signups**: New registrations auto-create leads in super admin's org, affiliate referrals tagged
-- [x] **Discount codes restricted** to super_admin + deputy_admin only
-- [x] Column visibility toggles for Leads and Contacts lists
+- [x] Auto-Lead from signups, affiliate referral tracking
+- [x] Column visibility, support management, role management
 
 ## P0 - Requires User Action
 - Twilio phone number for live calling
