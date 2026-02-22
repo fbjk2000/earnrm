@@ -19,7 +19,8 @@ import {
   BarChart3,
   HelpCircle,
   MessageSquare,
-  Phone
+  Phone,
+  UserCheck
 } from 'lucide-react';
 
 const DashboardLayout = ({ children }) => {
