@@ -81,8 +81,8 @@ const AuthProvider = ({ children }) => {
   const checkAuth = async () => {
     const storedToken = localStorage.getItem('token');
     
-    if (storedToken) {
-      try {
+    try {
+      if (storedToken) {
         const response = await axios.get(`${API}/auth/me`, {
           withCredentials: true,
           headers: { Authorization: `Bearer ${storedToken}` }
@@ -90,20 +90,16 @@ const AuthProvider = ({ children }) => {
         setUser(response.data);
         setToken(storedToken);
         return;
-      } catch (e) {
-        if (e.response && e.response.status === 401) {
-          localStorage.removeItem('token');
-          setToken(null);
-        }
       }
-    }
-    
-    // Try cookie-based auth (for Google OAuth sessions)
-    try {
+
+      // No token — try cookie-based auth (for Google OAuth sessions)
       const response = await axios.get(`${API}/auth/me`, { withCredentials: true });
       setUser(response.data);
     } catch (e) {
-      // No valid session
+      if (storedToken && e.response && e.response.status === 401) {
+        localStorage.removeItem('token');
+        setToken(null);
+      }
       setUser(null);
     } finally {
       setLoading(false);
