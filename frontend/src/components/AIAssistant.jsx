@@ -194,7 +194,12 @@ export const AIEmailComposer = ({ leadId, leadName, onClose }) => {
   const [customContext, setCustomContext] = useState('');
   const [email, setEmail] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(!!onClose);
+
+  const handleOpenChange = (open) => {
+    setIsOpen(open);
+    if (!open && onClose) onClose();
+  };
 
   const generateEmail = async () => {
     setLoading(true);
