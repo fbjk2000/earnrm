@@ -374,6 +374,49 @@ const DealsPage = () => {
                     />
                   </div>
                 </div>
+
+                {/* Link to Entity */}
+                <div className="space-y-3 bg-slate-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-slate-800 text-sm">Link Deal To</h3>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-1">
+                      <Label className="text-xs">Lead</Label>
+                      <Select value={newDeal.lead_id || 'none'} onValueChange={(v) => {
+                        setNewDeal({ ...newDeal, lead_id: v === 'none' ? '' : v });
+                        if (v !== 'none') setNewDeal(prev => ({ ...prev, lead_id: v, probability: Math.min(prev.probability, 30) }));
+                      }}>
+                        <SelectTrigger className="h-8 text-xs" data-testid="deal-lead-select"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">None</SelectItem>
+                          {availableLeads.map(l => <SelectItem key={l.lead_id} value={l.lead_id}>{l.first_name} {l.last_name}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Contact</Label>
+                      <Select value={newDeal.contact_id || 'none'} onValueChange={(v) => setNewDeal({ ...newDeal, contact_id: v === 'none' ? '' : v })}>
+                        <SelectTrigger className="h-8 text-xs" data-testid="deal-contact-select"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">None</SelectItem>
+                          {availableContacts.map(c => <SelectItem key={c.contact_id} value={c.contact_id}>{c.first_name} {c.last_name}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Company</Label>
+                      <Select value={newDeal.company_id || 'none'} onValueChange={(v) => setNewDeal({ ...newDeal, company_id: v === 'none' ? '' : v })}>
+                        <SelectTrigger className="h-8 text-xs" data-testid="deal-company-select"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">None</SelectItem>
+                          {availableCompanies.map(c => <SelectItem key={c.company_id} value={c.company_id}>{c.name}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  {newDeal.lead_id && newDeal.lead_id !== 'none' && (
+                    <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded">Linking to a lead suggests a lower probability of closing. Consider 10-30%.</p>
+                  )}
+                </div>
                 
                 {/* Mandatory Task Section */}
                 <div className="space-y-4 bg-purple-50 p-4 rounded-lg">
