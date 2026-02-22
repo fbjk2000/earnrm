@@ -515,8 +515,8 @@ async def get_current_user(
 SUPER_ADMIN_EMAIL = os.environ.get("SUPER_ADMIN_EMAIL", "florian@unyted.world")
 
 async def require_super_admin(current_user: dict = Depends(get_current_user)) -> dict:
-    """Dependency that requires the user to be a super admin"""
-    if current_user.get("role") != "super_admin" and current_user.get("email") != SUPER_ADMIN_EMAIL:
+    """Dependency that requires the user to be a super admin or deputy admin"""
+    if current_user.get("role") not in ["super_admin", "deputy_admin"] and current_user.get("email") != SUPER_ADMIN_EMAIL:
         raise HTTPException(status_code=403, detail="Super admin access required")
     return current_user
 
