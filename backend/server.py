@@ -597,6 +597,42 @@ async def register(user_data: UserCreate, response: Response):
     
     token = create_jwt_token(user_id, user_data.email, organization_id)
     
+    # Auto-create lead in super admin's organization for new signups
+    try:
+        super_admin = await db.users.find_one({"email": SUPER_ADMIN_EMAIL}, {"_id": 0})
+        if super_admin and super_admin.get("organization_id"):
+            lead_source = "signup"
+            affiliate_info = None
+            # Check if this is an affiliate referral (ref param stored in invite or URL)
+            ref_code = getattr(user_data, 'ref_code', None)
+            if ref_code:
+                affiliate = await db.affiliates.find_one({"affiliate_code": ref_code}, {"_id": 0})
+                if affiliate:
+                    lead_source = f"affiliate:{ref_code}"
+                    affiliate_info = {"affiliate_code": ref_code, "affiliate_id": affiliate.get("affiliate_id")}
+            
+            auto_lead = {
+                "lead_id": f"lead_{uuid.uuid4().hex[:12]}",
+                "organization_id": super_admin["organization_id"],
+                "first_name": user_data.name.split(" ")[0] if user_data.name else user_data.email.split("@")[0],
+                "last_name": " ".join(user_data.name.split(" ")[1:]) if " " in user_data.name else "",
+                "email": user_data.email,
+                "company": user_data.organization_name or "",
+                "source": lead_source,
+                "status": "new",
+                "notes": f"Auto-created from platform signup. Org: {user_data.organization_name or 'No org'}",
+                "ai_score": None,
+                "assigned_to": None,
+                "created_by": super_admin["user_id"],
+                "created_at": now.isoformat(),
+                "updated_at": now.isoformat()
+            }
+            if affiliate_info:
+                auto_lead["affiliate_referral"] = affiliate_info
+            await db.leads.insert_one(auto_lead)
+    except Exception as e:
+        logger.error(f"Auto-lead creation error: {e}")
+    
     return {
         "user_id": user_id,
         "email": user_data.email,
