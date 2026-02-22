@@ -775,6 +775,38 @@ const LeadsPage = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Convert to Contact Dialog */}
+      <Dialog open={showConvertDialog} onOpenChange={() => { setShowConvertDialog(false); setConvertLead(null); }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><UserPlus className="w-5 h-5 text-[#A100FF]" /> Convert Lead to Contact</DialogTitle>
+          </DialogHeader>
+          {convertLead && (
+            <div className="space-y-4 pt-2">
+              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
+                <p className="font-medium text-slate-900">{convertLead.first_name} {convertLead.last_name}</p>
+                <p className="text-sm text-slate-500">{convertLead.company} {convertLead.job_title && `· ${convertLead.job_title}`}</p>
+              </div>
+              <p className="text-sm text-slate-600">This will create a Contact with all lead data and mark the lead as converted. You can optionally link a deal.</p>
+              <div>
+                <Label className="text-sm font-medium text-slate-700 mb-1.5 block">Link to Deal (optional)</Label>
+                <Select value={convertDealId} onValueChange={setConvertDealId}>
+                  <SelectTrigger data-testid="convert-deal-select"><SelectValue placeholder="No deal linked" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">No deal</SelectItem>
+                    {deals.map(d => <SelectItem key={d.deal_id} value={d.deal_id}>{d.name} — €{d.value}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button onClick={handleConvertToContact} disabled={converting} className="w-full bg-[#A100FF] hover:bg-purple-700" data-testid="confirm-convert-btn">
+                {converting ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" /> : <UserPlus className="w-4 h-4 mr-2" />}
+                Convert to Contact
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 };
