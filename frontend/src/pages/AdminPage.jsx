@@ -315,14 +315,11 @@ const AdminPage = () => {
                             <td className="py-3 px-4 text-sm text-slate-500">
                               {u.organization_id || '—'}
                             </td>
-                            <td className="py-3 px-4">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => copyToClipboard(u.user_id)}
-                              >
-                                <Copy className="w-4 h-4" />
-                              </Button>
+                            <td className="py-3 px-4 text-xs text-slate-500">
+                              {u.last_login ? new Date(u.last_login).toLocaleDateString() : 'Never'}
+                            </td>
+                            <td className="py-3 px-4 text-xs text-slate-500">
+                              {u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}
                             </td>
                           </tr>
                         ))}
