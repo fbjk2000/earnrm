@@ -21,6 +21,7 @@ import PipelineReportPage from './pages/PipelineReportPage';
 import SubscriptionSuccessPage from './pages/SubscriptionSuccessPage';
 import ChatPage from './pages/ChatPage';
 import CallsPage from './pages/CallsPage';
+import ContactsPage from './pages/ContactsPage';
 
 import './App.css';
 
