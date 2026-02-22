@@ -55,6 +55,43 @@ const ContactsPage = () => {
     finally { setLoading(false); }
   };
 
+  const handleAddContact = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post(`${API}/contacts`, { ...newContact, source: 'manual' }, axiosConfig);
+      toast.success('Contact created');
+      setShowAddDialog(false);
+      setNewContact({ first_name: '', last_name: '', email: '', phone: '', company: '', job_title: '' });
+      fetchContacts();
+    } catch (err) { toast.error(err.response?.data?.detail || 'Failed to create contact'); }
+  };
+
+  const handleImportCSV = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const res = await axios.post(`${API}/contacts/import-csv`, formData, { headers: { ...headers, 'Content-Type': 'multipart/form-data' }, withCredentials: true });
+      toast.success(`Imported ${res.data.count} contacts`);
+      setShowImportDialog(false);
+      fetchContacts();
+    } catch { toast.error('Failed to import CSV'); }
+  };
+
+  const handleBulkDelete = async () => {
+    if (!selectedIds.length) return;
+    try {
+      await axios.post(`${API}/bulk/delete`, { entity_type: 'contact', entity_ids: selectedIds }, axiosConfig);
+      toast.success(`Deleted ${selectedIds.length} contacts`);
+      setSelectedIds([]);
+      fetchContacts();
+    } catch { toast.error('Failed to delete'); }
+  };
+
+  const toggleSelect = (id) => setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  const toggleSelectAll = () => setSelectedIds(selectedIds.length === filtered.length ? [] : filtered.map(c => c.contact_id));
+
   const openDetail = (c) => { setSelectedContact(c); setEditData({ ...c }); setEditMode(false); };
 
   const handleSave = async () => {
