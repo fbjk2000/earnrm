@@ -44,8 +44,9 @@ import { Badge } from '../components/ui/badge';
 import { SmartSearch, AIEmailComposer, LeadSummary } from '../components/AIAssistant';
 
 const LeadsPage = () => {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useState(() => new URLSearchParams(window.location.search));
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
