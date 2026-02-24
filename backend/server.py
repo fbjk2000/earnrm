@@ -4974,6 +4974,70 @@ async def call_twiml(call_id: str, message: str = "Thank you for your interest i
     resp.say("This call may be recorded for quality and training purposes.", voice="alice")
     return Response(content=str(resp), media_type="application/xml")
 
+@api_router.post("/webhooks/twilio/inbound")
+async def twilio_inbound_call(request: Request):
+    """Handle inbound calls — log them and play a greeting"""
+    from twilio.twiml.voice_response import VoiceResponse
+    
+    form = await request.form()
+    call_sid = form.get("CallSid", "")
+    from_number = form.get("From", "")
+    to_number = form.get("To", "")
+    
+    now = datetime.now(timezone.utc)
+    
+    # Try to match caller to a lead or contact
+    lead_name = "Unknown Caller"
+    lead_id = None
+    
+    # Find super admin's org for logging
+    super_admin = await db.users.find_one({"email": SUPER_ADMIN_EMAIL}, {"_id": 0})
+    org_id = super_admin.get("organization_id") if super_admin else None
+    
+    if org_id:
+        # Search for caller in leads/contacts by phone
+        lead = await db.leads.find_one({"organization_id": org_id, "phone": {"$regex": from_number[-8:]}}, {"_id": 0})
+        if lead:
+            lead_name = f"{lead.get('first_name','')} {lead.get('last_name','')}".strip()
+            lead_id = lead.get("lead_id")
+        else:
+            contact = await db.contacts.find_one({"organization_id": org_id, "phone": {"$regex": from_number[-8:]}}, {"_id": 0})
+            if contact:
+                lead_name = f"{contact.get('first_name','')} {contact.get('last_name','')}".strip()
+    
+    # Log the inbound call
+    call_doc = {
+        "call_id": f"call_{uuid.uuid4().hex[:12]}",
+        "call_sid": call_sid,
+        "organization_id": org_id,
+        "lead_id": lead_id,
+        "lead_name": lead_name,
+        "from_number": from_number,
+        "to_number": to_number,
+        "status": "ringing",
+        "direction": "inbound",
+        "duration": 0,
+        "recording_url": None,
+        "ai_analysis": None,
+        "initiated_by": None,
+        "initiated_by_name": "Inbound",
+        "created_at": now.isoformat(),
+        "ended_at": None
+    }
+    await db.calls.insert_one(call_doc)
+    
+    # Build TwiML response
+    resp = VoiceResponse()
+    resp.say("Thank you for calling earn R M. Your call is important to us.", voice="alice")
+    resp.say("Please leave a message after the beep, and we will get back to you shortly.", voice="alice")
+    resp.record(max_length=120, transcribe=False, play_beep=True,
+                recording_status_callback=f"{FRONTEND_URL.rstrip('/')}/api/webhooks/twilio/recording-status",
+                recording_status_callback_method="POST")
+    resp.say("Thank you. Goodbye.", voice="alice")
+    resp.hangup()
+    
+    return Response(content=str(resp), media_type="application/xml")
+
 @api_router.post("/webhooks/twilio/call-status")
 async def twilio_call_status_webhook(request: Request):
     """Webhook for Twilio call status updates"""
