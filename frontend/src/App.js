@@ -193,8 +193,9 @@ const ProtectedRoute = ({ children }) => {
 const AppRouter = () => {
   const location = useLocation();
 
-  // Check for session_id in hash BEFORE rendering routes
-  if (location.hash?.includes('session_id=')) {
+  // Check for session_id in hash OR query params BEFORE rendering routes
+  const hasSessionId = location.hash?.includes('session_id=') || location.search?.includes('session_id=');
+  if (hasSessionId) {
     return <AuthCallback />;
   }
 
