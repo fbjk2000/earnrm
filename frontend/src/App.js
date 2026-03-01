@@ -131,8 +131,17 @@ const AuthCallback = () => {
     hasProcessed.current = true;
 
     const processSession = async () => {
-      const hash = location.hash;
-      const sessionId = hash.split('session_id=')[1];
+      // Check hash first, then query params (Safari may strip hash on redirect)
+      const hash = location.hash || '';
+      const search = location.search || '';
+      const fullUrl = hash + search;
+      let sessionId = null;
+      
+      if (hash.includes('session_id=')) {
+        sessionId = hash.split('session_id=')[1]?.split('&')[0];
+      } else if (search.includes('session_id=')) {
+        sessionId = new URLSearchParams(search).get('session_id');
+      }
 
       if (sessionId) {
         try {
