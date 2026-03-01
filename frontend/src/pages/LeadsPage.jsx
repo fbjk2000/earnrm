@@ -824,19 +824,31 @@ const LeadsPage = () => {
                     </div>
                   )}
 
-                  {/* Action buttons */}
-                  <div className="flex gap-2 pt-1">
+                  {/* Action buttons - cross-linked */}
+                  <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
+                    {selectedLead.status !== 'converted' && (
+                      <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => { setConvertLead(selectedLead); setShowConvertDialog(true); setSelectedLead(null); }} data-testid="convert-from-detail">
+                        <UserPlus className="w-3.5 h-3.5 mr-1" /> Convert to Contact
+                      </Button>
+                    )}
+                    <Button size="sm" variant="outline" onClick={() => handleEnrichLead(selectedLead.lead_id)} disabled={enriching}>
+                      {enriching ? <div className="w-3.5 h-3.5 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mr-1" /> : <Wand2 className="w-3.5 h-3.5 mr-1" />} Enrich
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => { setEmailLeadId(selectedLead.lead_id); setEmailLeadName(`${selectedLead.first_name} ${selectedLead.last_name}`); setSelectedLead(null); }}>
+                      <Mail className="w-3.5 h-3.5 mr-1" /> Draft Email
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => { setSelectedLead(null); navigate(`/deals?lead=${selectedLead.lead_id}`); }}>
+                      <Target className="w-3.5 h-3.5 mr-1" /> Add Deal
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => { setSelectedLead(null); navigate(`/tasks?lead=${selectedLead.lead_id}`); }}>
+                      <CheckSquare className="w-3.5 h-3.5 mr-1" /> Add Task
+                    </Button>
                     <Button size="sm" variant="outline" onClick={() => navigate(`/chat?type=lead&id=${selectedLead.lead_id}`)}>
                       <MessageSquare className="w-3.5 h-3.5 mr-1" /> Discuss
                     </Button>
                     {selectedLead.phone && (
                       <Button size="sm" variant="outline" onClick={() => navigate(`/calls?lead=${selectedLead.lead_id}`)}>
                         <Phone className="w-3.5 h-3.5 mr-1" /> Call
-                      </Button>
-                    )}
-                    {selectedLead.email && (
-                      <Button size="sm" variant="outline" onClick={() => { setEmailLeadId(selectedLead.lead_id); setEmailLeadName(`${selectedLead.first_name} ${selectedLead.last_name}`); setSelectedLead(null); }} data-testid="draft-email-detail-btn">
-                        <Mail className="w-3.5 h-3.5 mr-1" /> Draft Email
                       </Button>
                     )}
                   </div>
