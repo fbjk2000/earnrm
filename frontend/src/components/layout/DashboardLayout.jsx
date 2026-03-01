@@ -44,8 +44,11 @@ const DashboardLayout = ({ children }) => {
     { divider: true },
     { path: '/settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
     { path: '/support', label: 'Support', icon: <HelpCircle className="w-5 h-5" /> },
-    ...(isAdmin ? [{ path: '/admin', label: 'Admin', icon: <Shield className="w-5 h-5" /> }] : [])
   ];
+
+  if (isAdmin) {
+    navItems.push({ path: '/admin', label: 'Admin', icon: <Shield className="w-5 h-5" /> });
+  }
 
   const handleLogout = async () => {
     await logout();
