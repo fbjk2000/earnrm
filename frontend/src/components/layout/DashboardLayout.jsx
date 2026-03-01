@@ -30,7 +30,7 @@ const DashboardLayout = ({ children }) => {
 
   const isAdmin = user?.role === 'super_admin' || user?.role === 'deputy_admin' || user?.email === 'florian@unyted.world';
 
-  const navItems = [
+  let navItems = [
     { path: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
     { path: '/leads', label: 'Leads', icon: <Users className="w-5 h-5" /> },
     { path: '/contacts', label: 'Contacts', icon: <Users className="w-5 h-5" /> },
