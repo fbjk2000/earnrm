@@ -147,7 +147,7 @@ const LeadsPage = () => {
       });
       fetchLeads();
     } catch (error) {
-      toast.error('Failed to add lead');
+      toast.error(error.response?.data?.detail || 'Failed to add lead');
     }
   };
 
