@@ -147,8 +147,7 @@ const AuthCallback = () => {
         try {
           const response = await axios.post(
             `${API}/auth/session`,
-            { session_id: sessionId },
-            { withCredentials: true }
+            { session_id: sessionId }
           );
           const { token: newToken, ...userData } = response.data;
           if (newToken) {
