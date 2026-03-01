@@ -239,7 +239,7 @@ export const AIEmailComposer = ({ leadId, leadName, onClose }) => {
           </Button>
         </DialogTrigger>
       )}
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Wand2 className="w-5 h-5 text-[#A100FF]" />
