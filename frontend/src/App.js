@@ -22,6 +22,7 @@ import SubscriptionSuccessPage from './pages/SubscriptionSuccessPage';
 import ChatPage from './pages/ChatPage';
 import CallsPage from './pages/CallsPage';
 import ContactsPage from './pages/ContactsPage';
+import ProjectsPage from './pages/ProjectsPage';
 
 import './App.css';
 
@@ -315,6 +316,14 @@ const AppRouter = () => {
         element={
           <ProtectedRoute>
             <ContactsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/projects"
+        element={
+          <ProtectedRoute>
+            <ProjectsPage />
           </ProtectedRoute>
         }
       />

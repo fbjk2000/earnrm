@@ -224,6 +224,7 @@ class TaskCreate(BaseModel):
     assigned_to: Optional[str] = None
     related_lead_id: Optional[str] = None
     related_deal_id: Optional[str] = None
+    project_id: Optional[str] = None
 
 class Campaign(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -1841,6 +1842,124 @@ async def delete_task(task_id: str, current_user: dict = Depends(get_current_use
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Task not found")
     return {"message": "Task deleted"}
+
+# ==================== PROJECTS ROUTES ====================
+
+class ProjectCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+    status: str = "active"  # active, on_hold, completed
+    deal_id: Optional[str] = None
+    members: List[str] = []  # user_ids
+
+@api_router.get("/projects")
+async def get_projects(current_user: dict = Depends(get_current_user)):
+    if not current_user.get("organization_id"):
+        org_id = await ensure_user_org(current_user)
+        current_user["organization_id"] = org_id
+    projects = await db.projects.find({"organization_id": current_user["organization_id"]}, {"_id": 0}).sort("created_at", -1).to_list(200)
+    
+    # Enrich with task counts
+    for p in projects:
+        total = await db.tasks.count_documents({"project_id": p["project_id"]})
+        done = await db.tasks.count_documents({"project_id": p["project_id"], "status": "done"})
+        p["task_count"] = total
+        p["tasks_done"] = done
+        p["progress"] = round((done / total) * 100) if total > 0 else 0
+    return projects
+
+@api_router.post("/projects")
+async def create_project(data: ProjectCreate, current_user: dict = Depends(get_current_user)):
+    if not current_user.get("organization_id"):
+        org_id = await ensure_user_org(current_user)
+        current_user["organization_id"] = org_id
+    
+    project_id = f"proj_{uuid.uuid4().hex[:12]}"
+    now = datetime.now(timezone.utc)
+    
+    members = data.members if data.members else [current_user["user_id"]]
+    if current_user["user_id"] not in members:
+        members.append(current_user["user_id"])
+    
+    doc = {
+        "project_id": project_id,
+        "organization_id": current_user["organization_id"],
+        "name": data.name,
+        "description": data.description,
+        "status": data.status,
+        "deal_id": data.deal_id,
+        "members": members,
+        "created_by": current_user["user_id"],
+        "created_at": now.isoformat(),
+        "updated_at": now.isoformat()
+    }
+    await db.projects.insert_one(doc)
+    
+    # Auto-create project chat channel
+    channel_doc = {
+        "channel_id": f"proj_chat_{project_id}",
+        "organization_id": current_user["organization_id"],
+        "name": f"Project: {data.name}",
+        "description": f"Discussion for project {data.name}",
+        "channel_type": "project",
+        "related_id": project_id,
+        "members": members,
+        "created_by": current_user["user_id"],
+        "created_at": now.isoformat(),
+        "last_message_at": None
+    }
+    await db.chat_channels.insert_one(channel_doc)
+    
+    doc.pop('_id', None)
+    return doc
+
+@api_router.get("/projects/{project_id}")
+async def get_project(project_id: str, current_user: dict = Depends(get_current_user)):
+    project = await db.projects.find_one(
+        {"project_id": project_id, "organization_id": current_user.get("organization_id")},
+        {"_id": 0}
+    )
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    # Get tasks
+    tasks = await db.tasks.find({"project_id": project_id}, {"_id": 0}).sort("created_at", -1).to_list(200)
+    total = len(tasks)
+    done = len([t for t in tasks if t.get("status") == "done"])
+    
+    # Get deal info
+    deal = None
+    if project.get("deal_id"):
+        deal = await db.deals.find_one({"deal_id": project["deal_id"]}, {"_id": 0})
+    
+    project["tasks"] = tasks
+    project["task_count"] = total
+    project["tasks_done"] = done
+    project["progress"] = round((done / total) * 100) if total > 0 else 0
+    project["deal"] = deal
+    return project
+
+@api_router.put("/projects/{project_id}")
+async def update_project(project_id: str, updates: dict, current_user: dict = Depends(get_current_user)):
+    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    result = await db.projects.update_one(
+        {"project_id": project_id, "organization_id": current_user.get("organization_id")},
+        {"$set": updates}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return await get_project(project_id, current_user)
+
+@api_router.delete("/projects/{project_id}")
+async def delete_project(project_id: str, current_user: dict = Depends(get_current_user)):
+    result = await db.projects.delete_one(
+        {"project_id": project_id, "organization_id": current_user.get("organization_id")}
+    )
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Project not found")
+    # Archive the chat channel
+    await db.chat_channels.update_one({"related_id": project_id, "channel_type": "project"}, {"$set": {"archived": True}})
+    return {"message": "Project deleted"}
 
 # ==================== CAMPAIGNS ROUTES ====================
 

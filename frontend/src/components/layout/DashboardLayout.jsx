@@ -36,6 +36,7 @@ const DashboardLayout = ({ children }) => {
     { path: '/contacts', label: 'Contacts', icon: <Users className="w-5 h-5" /> },
     { path: '/deals', label: 'Deals', icon: <Target className="w-5 h-5" /> },
     { path: '/tasks', label: 'Tasks', icon: <CheckSquare className="w-5 h-5" /> },
+    { path: '/projects', label: 'Projects', icon: <CheckSquare className="w-5 h-5" /> },
     { path: '/pipeline', label: 'Pipeline', icon: <BarChart3 className="w-5 h-5" /> },
     { path: '/companies', label: 'Companies', icon: <Building className="w-5 h-5" /> },
     { path: '/campaigns', label: 'Campaigns', icon: <Mail className="w-5 h-5" /> },

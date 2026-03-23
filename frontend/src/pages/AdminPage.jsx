@@ -432,7 +432,23 @@ const AdminPage = () => {
                                 {org.plan}
                               </span>
                             </td>
-                            <td className="py-3 px-4 text-slate-600">{org.user_count}/{org.max_users || org.max_free_users || 3}</td>
+                            <td className="py-3 px-4 text-slate-600">
+                              <span>{org.user_count}/</span>
+                              <input
+                                type="number"
+                                className="w-12 border border-slate-200 rounded px-1 py-0.5 text-center text-sm inline"
+                                defaultValue={org.max_users || org.max_free_users || 3}
+                                min={1}
+                                onBlur={async (e) => {
+                                  const val = parseInt(e.target.value);
+                                  if (val > 0) {
+                                    try { await axios.put(`${API}/admin/organizations/${org.organization_id}`, { max_users: val, max_free_users: val }, { headers, withCredentials: true }); toast.success(`Licenses set to ${val}`); } catch { toast.error('Failed'); }
+                                  }
+                                }}
+                                onKeyDown={(e) => { if (e.key === 'Enter') e.target.blur(); }}
+                                data-testid={`org-licenses-${index}`}
+                              />
+                            </td>
                             <td className="py-3 px-4 text-sm text-slate-500">
                               {new Date(org.created_at).toLocaleDateString()}
                             </td>

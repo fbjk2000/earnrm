@@ -49,6 +49,7 @@ const CHANNEL_CONFIG = {
   lead: { icon: UserCircle, color: 'text-blue-600', bg: 'bg-blue-100' },
   deal: { icon: Target, color: 'text-emerald-600', bg: 'bg-emerald-100' },
   task: { icon: CheckSquare, color: 'text-orange-600', bg: 'bg-orange-100' },
+  project: { icon: Hash, color: 'text-violet-600', bg: 'bg-violet-100' },
   company: { icon: Building, color: 'text-purple-600', bg: 'bg-purple-100' }
 };
 
@@ -510,6 +511,26 @@ const ChatPage = () => {
                       {channels.filter(c => c.channel_type === 'deal').map((channel) => (
                         <button key={channel.channel_id} onClick={() => handleChannelSelect(channel)} className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors ${activeChannel?.channel_id === channel.channel_id ? 'bg-emerald-100 text-emerald-700' : 'hover:bg-slate-100 text-slate-700'}`} data-testid={`channel-${channel.channel_id}`}>
                           <Target className="w-4 h-4 flex-shrink-0 text-emerald-600" />
+                          <span className="truncate">{channel.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {/* Project Channels - Collapsible */}
+              {channels.filter(c => c.channel_type === 'project').length > 0 && (
+                <div>
+                  <button onClick={() => toggleSection('projects')} className="flex items-center gap-1 text-xs font-semibold text-slate-500 px-3 uppercase w-full hover:text-slate-700" data-testid="toggle-projects">
+                    {collapsedSections.projects ? <ChevronRight className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                    Project Channels
+                  </button>
+                  {!collapsedSections.projects && (
+                    <div className="space-y-1 mt-1">
+                      {channels.filter(c => c.channel_type === 'project').map((channel) => (
+                        <button key={channel.channel_id} onClick={() => handleChannelSelect(channel)} className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors ${activeChannel?.channel_id === channel.channel_id ? 'bg-violet-100 text-violet-700' : 'hover:bg-slate-100 text-slate-700'}`} data-testid={`channel-${channel.channel_id}`}>
+                          <Hash className="w-4 h-4 flex-shrink-0 text-violet-600" />
                           <span className="truncate">{channel.name}</span>
                         </button>
                       ))}
