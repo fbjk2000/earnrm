@@ -42,6 +42,7 @@ const DashboardLayout = ({ children }) => {
     { path: '/campaigns', label: 'Campaigns', icon: <Mail className="w-5 h-5" /> },
     { path: '/chat', label: 'Team Chat', icon: <MessageSquare className="w-5 h-5" /> },
     { path: '/calls', label: 'Calls', icon: <Phone className="w-5 h-5" /> },
+    { path: '/calendar', label: 'Calendar', icon: <CheckSquare className="w-5 h-5" /> },
     { divider: true },
     { path: '/admin', label: 'Admin', icon: <Shield className="w-5 h-5" />, adminOnly: true },
     { path: '/settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },

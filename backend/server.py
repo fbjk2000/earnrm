@@ -1961,6 +1961,107 @@ async def delete_project(project_id: str, current_user: dict = Depends(get_curre
     await db.chat_channels.update_one({"related_id": project_id, "channel_type": "project"}, {"$set": {"archived": True}})
     return {"message": "Project deleted"}
 
+# ==================== CALENDAR ROUTES ====================
+
+@api_router.get("/calendar/events")
+async def get_calendar_events(start: Optional[str] = None, end: Optional[str] = None, current_user: dict = Depends(get_current_user)):
+    """Get all calendar events from tasks, calls, deals for date range"""
+    if not current_user.get("organization_id"):
+        org_id = await ensure_user_org(current_user)
+        current_user["organization_id"] = org_id
+    
+    org_id = current_user["organization_id"]
+    events = []
+    
+    # Scheduled calls
+    calls = await db.scheduled_calls.find({"organization_id": org_id, "status": "scheduled"}, {"_id": 0}).to_list(500)
+    for c in calls:
+        events.append({
+            "id": c["schedule_id"],
+            "title": f"Call: {c.get('lead_name', 'Unknown')}",
+            "date": c["scheduled_at"],
+            "type": "call",
+            "color": "#A100FF",
+            "entity_id": c.get("lead_id"),
+            "entity_type": "lead",
+            "notes": c.get("notes")
+        })
+    
+    # Tasks with due dates
+    tasks = await db.tasks.find({"organization_id": org_id, "due_date": {"$ne": None}}, {"_id": 0}).to_list(500)
+    for t in tasks:
+        events.append({
+            "id": t["task_id"],
+            "title": f"Task: {t['title']}",
+            "date": t["due_date"],
+            "type": "task",
+            "color": t.get("status") == "done" and "#10b981" or "#f59e0b",
+            "entity_id": t.get("project_id") or t.get("related_deal_id"),
+            "entity_type": "project" if t.get("project_id") else "deal" if t.get("related_deal_id") else "task",
+            "status": t.get("status"),
+            "priority": t.get("priority")
+        })
+    
+    # Deal close dates
+    deals = await db.deals.find({"organization_id": org_id, "expected_close_date": {"$ne": None}, "stage": {"$nin": ["lost", "won"]}}, {"_id": 0}).to_list(500)
+    for d in deals:
+        events.append({
+            "id": d["deal_id"],
+            "title": f"Close: {d['name']}",
+            "date": d["expected_close_date"],
+            "type": "deal",
+            "color": "#6366f1",
+            "value": d.get("value"),
+            "stage": d.get("stage"),
+            "entity_id": d["deal_id"],
+            "entity_type": "deal"
+        })
+    
+    # Custom calendar events
+    custom = await db.calendar_events.find({"organization_id": org_id}, {"_id": 0}).to_list(500)
+    for e in custom:
+        events.append({
+            "id": e["event_id"],
+            "title": e["title"],
+            "date": e["date"],
+            "type": "event",
+            "color": e.get("color", "#64748b"),
+            "notes": e.get("notes"),
+            "entity_id": None,
+            "entity_type": "event"
+        })
+    
+    return events
+
+@api_router.post("/calendar/events")
+async def create_calendar_event(title: str, date: str, notes: Optional[str] = None, color: str = "#A100FF", current_user: dict = Depends(get_current_user)):
+    """Create a custom calendar event"""
+    if not current_user.get("organization_id"):
+        org_id = await ensure_user_org(current_user)
+        current_user["organization_id"] = org_id
+    
+    event_id = f"evt_{uuid.uuid4().hex[:12]}"
+    doc = {
+        "event_id": event_id,
+        "organization_id": current_user["organization_id"],
+        "title": title,
+        "date": date,
+        "notes": notes,
+        "color": color,
+        "created_by": current_user["user_id"],
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.calendar_events.insert_one(doc)
+    doc.pop('_id', None)
+    return doc
+
+@api_router.delete("/calendar/events/{event_id}")
+async def delete_calendar_event(event_id: str, current_user: dict = Depends(get_current_user)):
+    result = await db.calendar_events.delete_one({"event_id": event_id, "organization_id": current_user.get("organization_id")})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Event not found")
+    return {"message": "Event deleted"}
+
 # ==================== CAMPAIGNS ROUTES ====================
 
 @api_router.get("/campaigns")

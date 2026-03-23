@@ -23,6 +23,7 @@ import ChatPage from './pages/ChatPage';
 import CallsPage from './pages/CallsPage';
 import ContactsPage from './pages/ContactsPage';
 import ProjectsPage from './pages/ProjectsPage';
+import CalendarPage from './pages/CalendarPage';
 
 import './App.css';
 
@@ -324,6 +325,14 @@ const AppRouter = () => {
         element={
           <ProtectedRoute>
             <ProjectsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/calendar"
+        element={
+          <ProtectedRoute>
+            <CalendarPage />
           </ProtectedRoute>
         }
       />
