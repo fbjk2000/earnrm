@@ -6037,7 +6037,7 @@ async def fire_webhooks(org_id: str, event: str, data: dict):
 @api_router.post("/webhooks")
 async def create_webhook(url: str, events: List[str], name: str = "Default", current_user: dict = Depends(get_current_user)):
     """Register a webhook URL for events (for n8n, Zapier, etc.)"""
-    valid_events = ["lead.created", "lead.updated", "deal.created", "deal.stage_changed", "contact.created", "task.created"]
+    valid_events = ["lead.created", "lead.updated", "deal.created", "deal.stage_changed", "contact.created", "task.created", "chat.message"]
     for e in events:
         if e not in valid_events:
             raise HTTPException(status_code=400, detail=f"Invalid event: {e}. Valid: {valid_events}")
@@ -6419,52 +6419,91 @@ Generate transcription summary and follow-ups."""
 
 # ==================== CHAT CHANNEL API (bidirectional) ====================
 
-@api_router.post("/v1/chat/send")
-async def api_chat_send(channel_id: str, content: str, sender_name: str = "AI Agent", user: dict = Depends(get_api_key_user)):
-    """External API: Send a message to a chat channel"""
-    channel = await db.chat_channels.find_one({"channel_id": channel_id, "organization_id": user.get("organization_id")}, {"_id": 0})
-    if not channel:
-        raise HTTPException(status_code=404, detail="Channel not found")
-    
-    now = datetime.now(timezone.utc)
-    message_id = f"msg_{uuid.uuid4().hex[:12]}"
-    
-    msg = {
-        "message_id": message_id,
-        "organization_id": user["organization_id"],
-        "channel_id": channel_id,
-        "sender_id": user["user_id"],
-        "sender_name": sender_name,
-        "content": content,
-        "mentions": [],
-        "reply_to": None,
-        "attachments": [],
-        "reactions": {},
-        "is_edited": False,
-        "is_bot": True,
-        "created_at": now.isoformat(),
-        "updated_at": now.isoformat()
-    }
-    await db.messages.insert_one(msg)
-    await db.chat_channels.update_one({"channel_id": channel_id}, {"$set": {"last_message_at": now.isoformat()}})
-    
-    msg.pop('_id', None)
-    return msg
+class ExternalChatMessage(BaseModel):
+    channel_id: str
+    content: str
+    sender_name: str = "AI Agent"
+    reply_to: Optional[str] = None
+    metadata: Optional[dict] = None
+
+class ExternalChannelCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+    channel_type: str = "general"
+    related_id: Optional[str] = None
+    members: List[str] = []
 
 @api_router.get("/v1/chat/channels")
-async def api_chat_channels(user: dict = Depends(get_api_key_user)):
-    """External API: List chat channels"""
-    channels = await db.chat_channels.find({"organization_id": user.get("organization_id"), "archived": {"$ne": True}}, {"_id": 0}).to_list(100)
+async def api_chat_channels(channel_type: Optional[str] = None, user: dict = Depends(get_api_key_user)):
+    """List all chat channels. Filter by type: general, lead, deal, project."""
+    query = {"organization_id": user.get("organization_id"), "archived": {"$ne": True}}
+    if channel_type:
+        query["channel_type"] = channel_type
+    channels = await db.chat_channels.find(query, {"_id": 0}).sort("last_message_at", -1).to_list(100)
     return {"data": channels, "count": len(channels)}
 
+@api_router.post("/v1/chat/channels")
+async def api_create_channel(data: ExternalChannelCreate, user: dict = Depends(get_api_key_user)):
+    """Create a new chat channel."""
+    now = datetime.now(timezone.utc)
+    channel_id = f"ch_{uuid.uuid4().hex[:12]}"
+    members = data.members if data.members else [user["user_id"]]
+    if user["user_id"] not in members:
+        members.append(user["user_id"])
+    doc = {
+        "channel_id": channel_id, "organization_id": user["organization_id"],
+        "name": data.name, "description": data.description, "channel_type": data.channel_type,
+        "related_id": data.related_id, "members": members, "created_by": user["user_id"],
+        "created_at": now.isoformat(), "last_message_at": None
+    }
+    await db.chat_channels.insert_one(doc)
+    doc.pop('_id', None)
+    return doc
+
 @api_router.get("/v1/chat/messages/{channel_id}")
-async def api_chat_messages(channel_id: str, limit: int = 50, since: Optional[str] = None, user: dict = Depends(get_api_key_user)):
-    """External API: Get messages from a channel"""
+async def api_chat_messages(channel_id: str, limit: int = 50, since: Optional[str] = None, before: Optional[str] = None, user: dict = Depends(get_api_key_user)):
+    """Get messages from a channel. Use 'since' to poll for new messages, 'before' to paginate back."""
     query = {"channel_id": channel_id, "organization_id": user.get("organization_id")}
     if since:
         query["created_at"] = {"$gt": since}
+    elif before:
+        query["created_at"] = {"$lt": before}
     messages = await db.messages.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
-    return {"data": list(reversed(messages)), "count": len(messages), "channel_id": channel_id}
+    result = list(reversed(messages))
+    return {
+        "data": result, "count": len(result), "channel_id": channel_id,
+        "has_more": len(result) == limit,
+        "oldest": result[0]["created_at"] if result else None,
+        "newest": result[-1]["created_at"] if result else None
+    }
+
+@api_router.post("/v1/chat/messages")
+async def api_post_message(data: ExternalChatMessage, user: dict = Depends(get_api_key_user)):
+    """Post a message to a chat channel. Works for bots, AI agents, and any integration."""
+    channel = await db.chat_channels.find_one({"channel_id": data.channel_id, "organization_id": user.get("organization_id")}, {"_id": 0})
+    if not channel:
+        raise HTTPException(status_code=404, detail="Channel not found. Use GET /v1/chat/channels to list available channels.")
+    now = datetime.now(timezone.utc)
+    message_id = f"msg_{uuid.uuid4().hex[:12]}"
+    msg = {
+        "message_id": message_id, "organization_id": user["organization_id"],
+        "channel_id": data.channel_id, "sender_id": user["user_id"],
+        "sender_name": data.sender_name, "content": data.content,
+        "mentions": [], "reply_to": data.reply_to, "attachments": [],
+        "reactions": {}, "is_edited": False, "is_bot": True,
+        "metadata": data.metadata,
+        "created_at": now.isoformat(), "updated_at": now.isoformat()
+    }
+    await db.messages.insert_one(msg)
+    await db.chat_channels.update_one({"channel_id": data.channel_id}, {"$set": {"last_message_at": now.isoformat()}})
+    await fire_webhooks(user["organization_id"], "chat.message", {"channel_id": data.channel_id, "message_id": message_id, "sender_name": data.sender_name, "content": data.content})
+    msg.pop('_id', None)
+    return msg
+
+# Legacy compat
+@api_router.post("/v1/chat/send")
+async def api_chat_send_compat(channel_id: str, content: str, sender_name: str = "AI Agent", user: dict = Depends(get_api_key_user)):
+    return await api_post_message(ExternalChatMessage(channel_id=channel_id, content=content, sender_name=sender_name), user)
 
 # ==================== BASIC ROUTES ====================
 
