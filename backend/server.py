@@ -6677,7 +6677,7 @@ async def api_chat_messages(channel_id: str, limit: int = 50, since: Optional[st
         query["created_at"] = {"$gt": since}
     elif before:
         query["created_at"] = {"$lt": before}
-    messages = await db.messages.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
+    messages = await db.chat_messages.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
     result = list(reversed(messages))
     return {
         "data": result, "count": len(result), "channel_id": channel_id,
@@ -6703,7 +6703,7 @@ async def api_post_message(data: ExternalChatMessage, user: dict = Depends(get_a
         "metadata": data.metadata,
         "created_at": now.isoformat(), "updated_at": now.isoformat()
     }
-    await db.messages.insert_one(msg)
+    await db.chat_messages.insert_one(msg)
     await db.chat_channels.update_one({"channel_id": data.channel_id}, {"$set": {"last_message_at": now.isoformat()}})
     await fire_webhooks(user["organization_id"], "chat.message", {"channel_id": data.channel_id, "message_id": message_id, "sender_name": data.sender_name, "content": data.content})
     msg.pop('_id', None)

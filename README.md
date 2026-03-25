@@ -466,20 +466,48 @@ GOOGLE_CLIENT_SECRET="your_client_secret"
 
 ---
 
-### Chat
+### Chat (Internal, JWT auth)
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/api/chat/channels` | List channels (excludes archived) |
 | POST | `/api/chat/channels` | Create channel |
 | PUT | `/api/chat/channels/{id}/archive` | Archive channel (admin only) |
-| GET | `/api/chat/channels/{id}/messages` | Get messages |
-| POST | `/api/chat/messages` | Send message |
+| GET | `/api/chat/channels/{channel_id}/messages` | Get messages. Params: `limit`, `before` |
+| POST | `/api/chat/channels/{channel_id}/messages` | Post a message |
 | PUT | `/api/chat/messages/{id}` | Edit message |
 | DELETE | `/api/chat/messages/{id}` | Delete message |
 | POST | `/api/chat/messages/{id}/react` | Toggle reaction |
 
 **Channel types**: `general`, `lead`, `deal`, `project`
+
+#### Post Message (JWT auth)
+```http
+POST /api/chat/channels/general/messages
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+{
+  "content": "Hello team!",
+  "channel_id": "general",
+  "mentions": [],
+  "reply_to": null,
+  "attachments": []
+}
+```
+
+**Response:**
+```json
+{
+  "message_id": "msg_xxx",
+  "channel_id": "general",
+  "sender_id": "user_xxx",
+  "sender_name": "Florian",
+  "content": "Hello team!",
+  "is_edited": false,
+  "created_at": "2026-03-25T18:00:00Z"
+}
+```
 
 ---
 
