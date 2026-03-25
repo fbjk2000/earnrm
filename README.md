@@ -493,6 +493,85 @@ GOOGLE_CLIENT_SECRET="your_client_secret"
 
 ---
 
+### Booking Engine
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | `/api/booking/settings` | JWT | Get booking settings |
+| PUT | `/api/booking/settings` | JWT | Update booking settings |
+| GET | `/api/booking/{user_id}/available` | Public | Get available time slots. Params: `date`, `duration` |
+| POST | `/api/booking/{user_id}/book` | Public | Book a meeting. Params: `name`, `email`, `start_time`, `duration`, `notes`, `phone` |
+| GET | `/api/bookings` | JWT | List your bookings |
+| PUT | `/api/bookings/{id}/cancel` | Public | Cancel a booking |
+| GET | `/api/booking/{user_id}/ical/{id}` | Public | Download .ics calendar file |
+
+#### Public Booking Page
+Share your booking link: `https://yourdomain.com/book/{your_user_id}`
+
+Guests can:
+- Select duration (15/30/60 min)
+- Pick a date from the calendar
+- Choose an available time slot
+- Fill in their details and book
+
+**Automation flow:**
+1. Guest books a meeting
+2. Confirmation email sent to guest (with .ics attachment)
+3. Notification email sent to host
+4. Reminder email sent 1 hour before
+5. Lead auto-created from booking in your CRM
+6. Event appears on your Calendar page
+
+#### Booking Settings
+```json
+{
+  "meeting_durations": [15, 30, 60],
+  "working_hours_start": "09:00",
+  "working_hours_end": "17:00",
+  "working_days": [0, 1, 2, 3, 4],
+  "buffer_minutes": 15,
+  "timezone": "Europe/London",
+  "welcome_message": "Book a meeting with us"
+}
+```
+
+---
+
+### Call Transcription
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/calls/{call_id}/transcribe` | Transcribe recording + generate follow-ups |
+
+Transcription uses AI to generate:
+- **Transcript summary** (3-5 sentences)
+- **Key discussion points**
+- **Action items** with priority (auto-created as tasks)
+- **Sentiment** analysis
+- **Next meeting** suggestion
+
+Follow-up tasks are automatically created in your task board.
+
+#### Response
+```json
+{
+  "call_id": "call_xxx",
+  "transcription": {
+    "transcript_summary": "...",
+    "key_points": ["Discussed pricing", "Agreed on timeline"],
+    "action_items": [
+      { "title": "Send proposal", "priority": "high" },
+      { "title": "Schedule follow-up", "priority": "medium" }
+    ],
+    "sentiment": "positive",
+    "next_meeting": "Review proposal details"
+  },
+  "tasks_created": 2
+}
+```
+
+---
+
 ### Bulk Operations
 
 | Method | Endpoint | Body |
@@ -579,6 +658,9 @@ Generate keys at **Settings → API & Webhooks**.
 | POST | `/api/v1/tasks` | — | Create task |
 | POST | `/api/v1/notion/sync` | `entity_type` | Notion-formatted export |
 | GET | `/api/v1/docs` | — | API documentation |
+| GET | `/api/v1/chat/channels` | — | List chat channels |
+| GET | `/api/v1/chat/messages/{channel_id}` | `limit`, `since` | Read messages from channel |
+| POST | `/api/v1/chat/send` | `channel_id`, `content`, `sender_name` | Send message to channel |
 
 ### Example: Fetch Leads
 ```bash
@@ -593,6 +675,37 @@ curl -X POST -H "X-API-Key: earnrm_abc123..." \
   -d '{"first_name":"Jane","last_name":"Doe","email":"jane@corp.com","company":"Corp Inc"}' \
   "https://earnrm.com/api/v1/leads"
 ```
+
+---
+
+### Chat API (for AI Agents)
+
+The Chat API enables bidirectional messaging for AI agents, bots, and external integrations.
+
+#### List Channels
+```bash
+curl -H "X-API-Key: earnrm_your_key" \
+  "https://earnrm.com/api/v1/chat/channels"
+```
+
+#### Read Messages
+```bash
+# Get latest 50 messages
+curl -H "X-API-Key: earnrm_your_key" \
+  "https://earnrm.com/api/v1/chat/messages/general?limit=50"
+
+# Poll for new messages since last check
+curl -H "X-API-Key: earnrm_your_key" \
+  "https://earnrm.com/api/v1/chat/messages/general?since=2026-03-25T10:00:00Z"
+```
+
+#### Send Message
+```bash
+curl -X POST -H "X-API-Key: earnrm_your_key" \
+  "https://earnrm.com/api/v1/chat/send?channel_id=general&content=Hello+from+AI&sender_name=Sales+Bot"
+```
+
+Bot messages are automatically marked with `is_bot: true`.
 
 ---
 
@@ -738,6 +851,9 @@ DELETE /api/api-keys/{key_id}
 | `calendar_events` | Custom calendar events |
 | `google_calendar_tokens` | Google OAuth tokens for Calendar sync |
 | `google_calendar_states` | OAuth state verification |
+| `bookings` | Calendar booking appointments |
+| `booking_settings` | User booking page settings |
+| `booking_reminders` | Scheduled booking reminders |
 
 ---
 
