@@ -69,6 +69,16 @@ const AdminPage = () => {
   const [explorerData, setExplorerData] = useState(null);
   const [explorerSearch, setExplorerSearch] = useState('');
   const [explorerPage, setExplorerPage] = useState(0);
+  // Reports
+  const [reportOverview, setReportOverview] = useState(null);
+  const [reportPerformance, setReportPerformance] = useState([]);
+  const [reportForecast, setReportForecast] = useState(null);
+  const [reportActivity, setReportActivity] = useState(null);
+  // User creation
+  const [showCreateUser, setShowCreateUser] = useState(false);
+  const [newUser, setNewUser] = useState({ email: '', name: '', password: '', role: 'member', organization_id: '' });
+  const [showResetPw, setShowResetPw] = useState(null);
+  const [resetPw, setResetPw] = useState('');
 
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
@@ -136,6 +146,45 @@ const AdminPage = () => {
     setExplorerPage(0);
     setExplorerSearch('');
     fetchExplorerData(coll, 0, '');
+  };
+
+  const fetchReports = async () => {
+    try {
+      const [ov, perf, fc, act] = await Promise.all([
+        axios.get(`${API}/admin/reports/overview`, { headers, withCredentials: true }),
+        axios.get(`${API}/admin/reports/user-performance`, { headers, withCredentials: true }),
+        axios.get(`${API}/admin/reports/pipeline-forecast`, { headers, withCredentials: true }),
+        axios.get(`${API}/admin/reports/activity-log?days=30`, { headers, withCredentials: true })
+      ]);
+      setReportOverview(ov.data);
+      setReportPerformance(perf.data);
+      setReportForecast(fc.data);
+      setReportActivity(act.data);
+    } catch { toast.error('Failed to load reports'); }
+  };
+
+  const handleCreateUser = async () => {
+    try {
+      await axios.post(`${API}/admin/users/create`, newUser, { headers, withCredentials: true });
+      toast.success('User created');
+      setShowCreateUser(false);
+      setNewUser({ email: '', name: '', password: '', role: 'member', organization_id: '' });
+      fetchAllData();
+    } catch (e) { toast.error(e.response?.data?.detail || 'Failed'); }
+  };
+
+  const handleResetPassword = async (userId) => {
+    if (!resetPw) return;
+    try {
+      await axios.put(`${API}/admin/users/${userId}/password`, { new_password: resetPw }, { headers, withCredentials: true });
+      toast.success('Password reset');
+      setShowResetPw(null);
+      setResetPw('');
+    } catch { toast.error('Failed'); }
+  };
+
+  const handleExportCSV = (entity) => {
+    window.open(`${API}/admin/reports/export/${entity}`, '_blank');
   };
 
   const handleUpdateSettings = async (settingKey, value) => {
@@ -315,15 +364,21 @@ const AdminPage = () => {
             <TabsTrigger value="discounts">Discount Codes</TabsTrigger>
             <TabsTrigger value="affiliates">Affiliates</TabsTrigger>
             <TabsTrigger value="explorer" data-testid="admin-explorer-tab" onClick={() => { if (!Object.keys(explorerCollections).length) fetchExplorerCollections(); }}>Data Explorer</TabsTrigger>
+            <TabsTrigger value="reports" data-testid="admin-reports-tab">Reports</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
           {/* Users Tab */}
           <TabsContent value="users">
             <Card>
-              <CardHeader>
-                <CardTitle>All Users</CardTitle>
-                <CardDescription>Manage user accounts and roles</CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>All Users</CardTitle>
+                  <CardDescription>Manage user accounts and roles</CardDescription>
+                </div>
+                <Button className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white" onClick={() => setShowCreateUser(true)} data-testid="create-user-btn">
+                  <UserPlus className="w-4 h-4 mr-2" /> Create User
+                </Button>
               </CardHeader>
               <CardContent>
                 {users.length === 0 ? (
@@ -377,7 +432,8 @@ const AdminPage = () => {
                             <td className="py-3 px-4 text-xs text-slate-500">
                               {u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}
                             </td>
-                            <td className="py-3 px-4">
+                            <td className="py-3 px-4 flex gap-1">
+                              <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => { setShowResetPw(u.user_id); setResetPw(''); }} data-testid={`reset-pw-${index}`}>Reset PW</Button>
                               {u.email !== 'florian@unyted.world' && (
                                 <Button variant="ghost" size="sm" className="text-red-500 h-7" onClick={async () => {
                                   if (!window.confirm(`Delete user ${u.name}?`)) return;
@@ -919,6 +975,134 @@ const AdminPage = () => {
             </Card>
           </TabsContent>
 
+          {/* Reports Tab */}
+          <TabsContent value="reports">
+            <div className="space-y-6">
+              {!reportOverview ? (
+                <Card className="p-8 text-center">
+                  <Button className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white" onClick={fetchReports} data-testid="load-reports-btn">Load Reports</Button>
+                </Card>
+              ) : (
+                <>
+                  {/* Overview Cards */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {[
+                      { label: 'Total Users', value: reportOverview.total_users },
+                      { label: 'Pipeline Value', value: `\u20AC${reportOverview.pipeline_value?.toLocaleString()}` },
+                      { label: 'Won Revenue', value: `\u20AC${reportOverview.won_revenue?.toLocaleString()}` },
+                      { label: 'Win Rate', value: `${reportOverview.win_rate}%` },
+                      { label: 'Total Leads', value: reportOverview.total_leads },
+                      { label: 'Contacts', value: reportOverview.total_contacts },
+                      { label: 'Deals Won', value: reportOverview.deals_won },
+                      { label: 'Deals Lost', value: reportOverview.deals_lost },
+                    ].map((s, i) => (
+                      <Card key={i}><CardContent className="p-4"><p className="text-xs text-slate-500">{s.label}</p><p className="text-2xl font-bold mt-1">{s.value}</p></CardContent></Card>
+                    ))}
+                  </div>
+
+                  {/* Activity (last 30 days) */}
+                  {reportActivity && (
+                    <Card>
+                      <CardHeader><CardTitle className="text-lg">Activity (Last 30 Days)</CardTitle></CardHeader>
+                      <CardContent>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                          {[
+                            { label: 'New Signups', value: reportActivity.new_signups },
+                            { label: 'Active Users', value: reportActivity.active_users },
+                            { label: 'New Leads', value: reportActivity.new_leads },
+                            { label: 'New Deals', value: reportActivity.new_deals },
+                            { label: 'Calls Made', value: reportActivity.calls_made },
+                            { label: 'Meetings Booked', value: reportActivity.meetings_booked },
+                            { label: 'New Contacts', value: reportActivity.new_contacts },
+                            { label: 'Tasks Created', value: reportActivity.new_tasks },
+                          ].map((s, i) => (
+                            <div key={i} className="bg-slate-50 rounded-lg p-3"><p className="text-xs text-slate-500">{s.label}</p><p className="text-xl font-bold">{s.value}</p></div>
+                          ))}
+                        </div>
+                        {reportActivity.recent_logins?.length > 0 && (
+                          <div>
+                            <p className="text-sm font-medium text-slate-700 mb-2">Recent Logins</p>
+                            <div className="space-y-1">{reportActivity.recent_logins.slice(0, 10).map((u, i) => (
+                              <div key={i} className="flex items-center justify-between text-sm py-1 border-b border-slate-50">
+                                <span className="font-medium">{u.name}</span><span className="text-slate-500">{u.email}</span><span className="text-xs text-slate-400">{u.last_login ? new Date(u.last_login).toLocaleString() : ''}</span>
+                              </div>
+                            ))}</div>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* User Performance */}
+                  <Card>
+                    <CardHeader><CardTitle className="text-lg">User Performance</CardTitle></CardHeader>
+                    <CardContent>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead><tr className="border-b">{['User', 'Leads', 'Deals', 'Won', 'Revenue', 'Tasks Done', 'Completion %', 'Last Login'].map(h => <th key={h} className="text-left py-2 px-3 text-xs font-medium text-slate-500">{h}</th>)}</tr></thead>
+                          <tbody>{reportPerformance.map((u, i) => (
+                            <tr key={i} className="border-b border-slate-50 hover:bg-slate-50">
+                              <td className="py-2 px-3"><p className="font-medium">{u.name}</p><p className="text-xs text-slate-400">{u.email}</p></td>
+                              <td className="py-2 px-3">{u.leads_created}</td>
+                              <td className="py-2 px-3">{u.deals_created}</td>
+                              <td className="py-2 px-3 font-medium text-emerald-600">{u.deals_won}</td>
+                              <td className="py-2 px-3 font-medium">{'\u20AC'}{u.revenue_won?.toLocaleString()}</td>
+                              <td className="py-2 px-3">{u.tasks_completed}/{u.tasks_total}</td>
+                              <td className="py-2 px-3">{u.task_completion_rate}%</td>
+                              <td className="py-2 px-3 text-xs text-slate-400">{u.last_login ? new Date(u.last_login).toLocaleDateString() : 'Never'}</td>
+                            </tr>
+                          ))}</tbody>
+                        </table>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Pipeline Forecast */}
+                  {reportForecast && (
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <Card>
+                        <CardHeader><CardTitle className="text-lg">Forecast by Stage</CardTitle></CardHeader>
+                        <CardContent>
+                          {Object.entries(reportForecast.by_stage).map(([stage, data]) => (
+                            <div key={stage} className="flex items-center justify-between py-2 border-b border-slate-50">
+                              <span className="text-sm font-medium capitalize">{stage}</span>
+                              <div className="text-right"><p className="text-sm font-bold">{'\u20AC'}{data.value?.toLocaleString()}</p><p className="text-xs text-slate-400">{data.count} deals, weighted {'\u20AC'}{Math.round(data.weighted).toLocaleString()}</p></div>
+                            </div>
+                          ))}
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardHeader><CardTitle className="text-lg">Forecast by Tag</CardTitle></CardHeader>
+                        <CardContent>
+                          {Object.keys(reportForecast.by_tag).length === 0 ? <p className="text-sm text-slate-400 py-4">No tagged deals</p> :
+                            Object.entries(reportForecast.by_tag).map(([tag, data]) => (
+                              <div key={tag} className="flex items-center justify-between py-2 border-b border-slate-50">
+                                <span className="text-sm font-medium">{tag}</span>
+                                <div className="text-right"><p className="text-sm font-bold">{'\u20AC'}{data.value?.toLocaleString()}</p><p className="text-xs text-slate-400">{data.count} deals</p></div>
+                              </div>
+                            ))
+                          }
+                        </CardContent>
+                      </Card>
+                    </div>
+                  )}
+
+                  {/* Export */}
+                  <Card>
+                    <CardHeader><CardTitle className="text-lg">Export Data</CardTitle></CardHeader>
+                    <CardContent>
+                      <div className="flex flex-wrap gap-2">
+                        {['leads', 'contacts', 'deals', 'tasks', 'users', 'companies'].map(e => (
+                          <Button key={e} variant="outline" size="sm" onClick={() => handleExportCSV(e)} data-testid={`export-${e}`}>Export {e}</Button>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </>
+              )}
+            </div>
+          </TabsContent>
+
           {/* Settings Tab */}
           <TabsContent value="settings">
             <Card>
@@ -1040,6 +1224,45 @@ const AdminPage = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Create User Dialog */}
+      <Dialog open={showCreateUser} onOpenChange={setShowCreateUser}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>Create User</DialogTitle></DialogHeader>
+          <div className="space-y-3 pt-2">
+            <div><Label className="text-xs">Name *</Label><Input value={newUser.name} onChange={e => setNewUser({...newUser, name: e.target.value})} placeholder="Full name" data-testid="new-user-name" /></div>
+            <div><Label className="text-xs">Email *</Label><Input value={newUser.email} onChange={e => setNewUser({...newUser, email: e.target.value})} placeholder="user@company.com" data-testid="new-user-email" /></div>
+            <div><Label className="text-xs">Password *</Label><Input type="password" value={newUser.password} onChange={e => setNewUser({...newUser, password: e.target.value})} placeholder="Set initial password" data-testid="new-user-pw" /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label className="text-xs">Role</Label>
+                <Select value={newUser.role} onValueChange={v => setNewUser({...newUser, role: v})}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="member">Member</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="owner">Owner</SelectItem>
+                    <SelectItem value="deputy_admin">Deputy Admin</SelectItem>
+                    <SelectItem value="support">Support</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div><Label className="text-xs">Organization ID</Label><Input value={newUser.organization_id} onChange={e => setNewUser({...newUser, organization_id: e.target.value})} placeholder="org_xxx (optional)" /></div>
+            </div>
+            <Button onClick={handleCreateUser} className="w-full bg-[#7C3AED] hover:bg-[#6D28D9] text-white" data-testid="submit-create-user">Create User</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reset Password Dialog */}
+      <Dialog open={!!showResetPw} onOpenChange={() => setShowResetPw(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle>Reset Password</DialogTitle></DialogHeader>
+          <div className="space-y-3 pt-2">
+            <div><Label className="text-xs">New Password</Label><Input type="password" value={resetPw} onChange={e => setResetPw(e.target.value)} placeholder="Enter new password" data-testid="reset-pw-input" /></div>
+            <Button onClick={() => handleResetPassword(showResetPw)} className="w-full bg-[#7C3AED] hover:bg-[#6D28D9] text-white" data-testid="submit-reset-pw">Reset Password</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 };

@@ -3359,6 +3359,215 @@ async def admin_update_organization(org_id: str, updates: dict, current_user: di
     updated = await db.organizations.find_one({"organization_id": org_id}, {"_id": 0})
     return updated
 
+# ==================== ADMIN USER MANAGEMENT ====================
+
+class AdminCreateUser(BaseModel):
+    email: str
+    name: str
+    password: str
+    role: str = "member"
+    organization_id: Optional[str] = None
+
+class AdminResetPassword(BaseModel):
+    new_password: str
+
+@api_router.post("/admin/users/create")
+async def admin_create_user(data: AdminCreateUser, current_user: dict = Depends(require_super_admin)):
+    """Create a user directly without signup flow"""
+    existing = await db.users.find_one({"email": data.email}, {"_id": 0})
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    user_id = f"user_{uuid.uuid4().hex[:12]}"
+    now = datetime.now(timezone.utc)
+    
+    user_doc = {
+        "user_id": user_id,
+        "email": data.email,
+        "name": data.name,
+        "password_hash": hash_password(data.password),
+        "organization_id": data.organization_id,
+        "role": data.role,
+        "created_at": now.isoformat(),
+        "created_by_admin": current_user["user_id"]
+    }
+    await db.users.insert_one(user_doc)
+    
+    if data.organization_id:
+        await db.organizations.update_one({"organization_id": data.organization_id}, {"$inc": {"user_count": 1}})
+    
+    return {"user_id": user_id, "email": data.email, "name": data.name, "role": data.role, "message": "User created"}
+
+@api_router.put("/admin/users/{user_id}/password")
+async def admin_reset_password(user_id: str, data: AdminResetPassword, current_user: dict = Depends(require_super_admin)):
+    """Reset a user's password"""
+    result = await db.users.update_one({"user_id": user_id}, {"$set": {"password_hash": hash_password(data.new_password)}})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"message": "Password reset successfully"}
+
+# ==================== REPORTING ENGINE ====================
+
+@api_router.get("/admin/reports/overview")
+async def report_overview(current_user: dict = Depends(require_super_admin)):
+    """Platform overview report"""
+    total_users = await db.users.count_documents({})
+    total_orgs = await db.organizations.count_documents({})
+    total_leads = await db.leads.count_documents({})
+    total_contacts = await db.contacts.count_documents({})
+    total_deals = await db.deals.count_documents({})
+    total_tasks = await db.tasks.count_documents({})
+    
+    deals_won = await db.deals.count_documents({"stage": "won"})
+    deals_lost = await db.deals.count_documents({"stage": "lost"})
+    
+    pipeline_agg = await db.deals.aggregate([
+        {"$match": {"stage": {"$ne": "lost"}}},
+        {"$group": {"_id": None, "total": {"$sum": "$value"}}}
+    ]).to_list(1)
+    pipeline_value = pipeline_agg[0]["total"] if pipeline_agg else 0
+    
+    won_agg = await db.deals.aggregate([
+        {"$match": {"stage": "won"}},
+        {"$group": {"_id": None, "total": {"$sum": "$value"}}}
+    ]).to_list(1)
+    won_revenue = won_agg[0]["total"] if won_agg else 0
+    
+    return {
+        "total_users": total_users, "total_orgs": total_orgs,
+        "total_leads": total_leads, "total_contacts": total_contacts,
+        "total_deals": total_deals, "total_tasks": total_tasks,
+        "deals_won": deals_won, "deals_lost": deals_lost,
+        "pipeline_value": pipeline_value, "won_revenue": won_revenue,
+        "win_rate": round(deals_won / max(deals_won + deals_lost, 1) * 100, 1)
+    }
+
+@api_router.get("/admin/reports/user-performance")
+async def report_user_performance(current_user: dict = Depends(require_super_admin)):
+    """Performance report per user"""
+    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).to_list(500)
+    
+    performance = []
+    for u in users:
+        uid = u["user_id"]
+        leads_created = await db.leads.count_documents({"created_by": uid})
+        deals_created = await db.deals.count_documents({"created_by": uid})
+        deals_won_count = await db.deals.count_documents({"created_by": uid, "stage": "won"})
+        tasks_done = await db.tasks.count_documents({"assigned_to": uid, "status": "done"})
+        tasks_total = await db.tasks.count_documents({"assigned_to": uid})
+        
+        won_val = await db.deals.aggregate([
+            {"$match": {"created_by": uid, "stage": "won"}},
+            {"$group": {"_id": None, "total": {"$sum": "$value"}}}
+        ]).to_list(1)
+        
+        performance.append({
+            "user_id": uid,
+            "name": u.get("name", ""),
+            "email": u.get("email", ""),
+            "role": u.get("role", "member"),
+            "last_login": u.get("last_login"),
+            "leads_created": leads_created,
+            "deals_created": deals_created,
+            "deals_won": deals_won_count,
+            "revenue_won": won_val[0]["total"] if won_val else 0,
+            "tasks_completed": tasks_done,
+            "tasks_total": tasks_total,
+            "task_completion_rate": round(tasks_done / max(tasks_total, 1) * 100, 1)
+        })
+    
+    return sorted(performance, key=lambda x: x["revenue_won"], reverse=True)
+
+@api_router.get("/admin/reports/pipeline-forecast")
+async def report_pipeline_forecast(current_user: dict = Depends(require_super_admin)):
+    """Pipeline forecast by stage, user, and tags"""
+    deals = await db.deals.find({"stage": {"$ne": "lost"}}, {"_id": 0}).to_list(5000)
+    
+    # By stage
+    by_stage = {}
+    for d in deals:
+        stage = d.get("stage", "unknown")
+        if stage not in by_stage:
+            by_stage[stage] = {"count": 0, "value": 0, "weighted": 0}
+        by_stage[stage]["count"] += 1
+        by_stage[stage]["value"] += d.get("value", 0)
+        by_stage[stage]["weighted"] += d.get("value", 0) * (d.get("probability", 0) / 100)
+    
+    # By user
+    by_user = {}
+    for d in deals:
+        uid = d.get("created_by", "unknown")
+        if uid not in by_user:
+            user = await db.users.find_one({"user_id": uid}, {"_id": 0, "password_hash": 0})
+            by_user[uid] = {"name": user.get("name", "Unknown") if user else "Unknown", "count": 0, "value": 0, "weighted": 0}
+        by_user[uid]["count"] += 1
+        by_user[uid]["value"] += d.get("value", 0)
+        by_user[uid]["weighted"] += d.get("value", 0) * (d.get("probability", 0) / 100)
+    
+    # By tag (as proxy for product/market)
+    by_tag = {}
+    for d in deals:
+        for tag in d.get("tags", []):
+            if tag not in by_tag:
+                by_tag[tag] = {"count": 0, "value": 0, "weighted": 0}
+            by_tag[tag]["count"] += 1
+            by_tag[tag]["value"] += d.get("value", 0)
+            by_tag[tag]["weighted"] += d.get("value", 0) * (d.get("probability", 0) / 100)
+    
+    return {"by_stage": by_stage, "by_user": by_user, "by_tag": by_tag, "total_deals": len(deals)}
+
+@api_router.get("/admin/reports/activity-log")
+async def report_activity_log(days: int = 30, current_user: dict = Depends(require_super_admin)):
+    """Recent activity across the platform"""
+    since = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+    
+    recent_leads = await db.leads.count_documents({"created_at": {"$gte": since}})
+    recent_contacts = await db.contacts.count_documents({"created_at": {"$gte": since}})
+    recent_deals = await db.deals.count_documents({"created_at": {"$gte": since}})
+    recent_tasks = await db.tasks.count_documents({"created_at": {"$gte": since}})
+    recent_calls = await db.calls.count_documents({"created_at": {"$gte": since}})
+    recent_bookings = await db.bookings.count_documents({"created_at": {"$gte": since}})
+    recent_signups = await db.users.count_documents({"created_at": {"$gte": since}})
+    
+    # Login activity
+    recent_logins = await db.users.find({"last_login": {"$gte": since}}, {"_id": 0, "password_hash": 0}).to_list(500)
+    active_users = len(recent_logins)
+    
+    return {
+        "period_days": days,
+        "new_leads": recent_leads, "new_contacts": recent_contacts,
+        "new_deals": recent_deals, "new_tasks": recent_tasks,
+        "calls_made": recent_calls, "meetings_booked": recent_bookings,
+        "new_signups": recent_signups, "active_users": active_users,
+        "recent_logins": [{"name": u.get("name"), "email": u.get("email"), "last_login": u.get("last_login")} for u in recent_logins[:20]]
+    }
+
+@api_router.get("/admin/reports/export/{entity}")
+async def export_report_csv(entity: str, current_user: dict = Depends(require_super_admin)):
+    """Export data as CSV"""
+    collections = {"leads": db.leads, "contacts": db.contacts, "deals": db.deals, "tasks": db.tasks, "users": db.users, "companies": db.companies}
+    if entity not in collections:
+        raise HTTPException(status_code=400, detail=f"Invalid entity. Options: {', '.join(collections.keys())}")
+    
+    projection = {"_id": 0}
+    if entity == "users":
+        projection["password_hash"] = 0
+    
+    docs = await collections[entity].find({}, projection).to_list(10000)
+    if not docs:
+        return Response(content="No data", media_type="text/csv")
+    
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=docs[0].keys(), extrasaction='ignore')
+    writer.writeheader()
+    for d in docs:
+        row = {}
+        for k, v in d.items():
+            row[k] = str(v) if isinstance(v, (dict, list)) else v
+        writer.writerow(row)
+    
+    return Response(content=output.getvalue(), media_type="text/csv", headers={"Content-Disposition": f"attachment; filename=earnrm_{entity}_{datetime.now().strftime('%Y%m%d')}.csv"})
+
 # ==================== SUPER ADMIN SETUP ====================
 
 @api_router.post("/admin/setup-super-admin")

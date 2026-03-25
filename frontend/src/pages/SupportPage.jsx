@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../App';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import { Button } from '../components/ui/button';
@@ -260,6 +260,8 @@ const SupportPage = () => {
   ];
 
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const defaultTab = searchParams.get('tab') || 'faq';
 
   const supportContent = (
     <div className={user ? "p-6" : "min-h-screen bg-slate-50"}>
@@ -306,7 +308,7 @@ const SupportPage = () => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-12">
-        <Tabs defaultValue="faq" className="space-y-8">
+        <Tabs defaultValue={defaultTab} className="space-y-8">
           <TabsList className="grid w-full grid-cols-4 max-w-2xl mx-auto" data-testid="support-tabs">
             <TabsTrigger value="faq" className="flex items-center gap-2">
               <HelpCircle className="w-4 h-4" />

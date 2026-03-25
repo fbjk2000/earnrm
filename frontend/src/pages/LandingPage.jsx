@@ -247,7 +247,7 @@ const LandingPage = () => {
                     </li>
                   ))}
                 </ul>
-                <Link to={p.plan === 'Enterprise' ? '/support' : '/signup'}>
+                <Link to={p.plan === 'Enterprise' ? '/support?tab=contact' : '/signup'}>
                   <Button className={`w-full h-10 rounded-lg text-sm ${p.primary ? 'bg-[#D4A853] hover:bg-[#c49a48] text-[#0F0A1E] font-medium' : 'bg-[#0F0A1E]/5 hover:bg-[#0F0A1E]/10 text-[#0F0A1E]'}`}>
                     {p.cta}
                   </Button>
